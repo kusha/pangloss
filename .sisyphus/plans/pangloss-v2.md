@@ -1122,7 +1122,7 @@ print('Multi-char phoneme checks passed!')
   - Message: `feat(phonemes): add articulatory feature groups and phoneme distance function`
   - Files: `pangloss/data/phonemes.py`
 
-- [ ] 11. Integrate fuzzy matching into convergence + generator
+- [x] 11. Integrate fuzzy matching into convergence + generator
 
   **What to do**:
   - In `pangloss/algo/convergence.py`: Modify the language intersection computation to allow near-matches.

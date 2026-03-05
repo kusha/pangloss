@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import List, Set, Any, Optional, Dict
 import networkx as nx
-from pangloss.algo.convergence import ConvergencePoint
+from pangloss.algo.convergence import ConvergencePoint, _is_fuzzy_phoneme_sequence_match
+from pangloss.data.phonemes import phoneme_distance
 
 
 @dataclass
@@ -102,9 +103,11 @@ def generate_word(
     entries: List[Any],
     total_speakers: int,
     max_word_length: int = 8,
+    fuzzy: bool = False,
 ) -> SyntheticWord:
     total_world_speakers = total_speakers
     lang_speakers = {e.language_id: e.speaker_count for e in entries}
+    lang_phonemes = {e.language_id: e.phonemes for e in entries} if fuzzy else {}
 
     current_prefix = list(convergence_point.prefix_phonemes)
     current_suffix = list(convergence_point.suffix_phonemes)
@@ -130,8 +133,29 @@ def generate_word(
             s_langs = set(lang_speakers.keys())
 
         intersect = p_langs & s_langs
-        speakers = sum(lang_speakers.get(l, 0) for l in intersect)
-        return intersect, speakers
+
+        fuzzy_langs = set()
+        if fuzzy and intersect:
+            non_exact_langs = (p_langs | s_langs) - intersect
+            if non_exact_langs:
+                for exact_lang_id in intersect:
+                    exact_phonemes = lang_phonemes.get(exact_lang_id)
+                    if not exact_phonemes:
+                        continue
+
+                    for lang_id in non_exact_langs:
+                        if lang_id in fuzzy_langs:
+                            continue
+                        lang_seq = lang_phonemes.get(lang_id)
+                        if lang_seq and _is_fuzzy_phoneme_sequence_match(
+                            lang_seq, exact_phonemes
+                        ):
+                            fuzzy_langs.add(lang_id)
+
+        exact_speakers = sum(lang_speakers.get(l, 0) for l in intersect)
+        fuzzy_speakers_sum = sum(lang_speakers.get(l, 0) for l in fuzzy_langs)
+        speakers = exact_speakers + int(0.5 * fuzzy_speakers_sum)
+        return intersect | fuzzy_langs, speakers
 
     curr_langs, curr_speakers = get_intersection(current_prefix, current_suffix)
     curr_score = calculate_score(

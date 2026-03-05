@@ -14,6 +14,8 @@ from typing import Any, List, Set
 import math
 import networkx as nx
 
+from pangloss.data.phonemes import phoneme_distance
+
 
 @dataclass
 class ConvergencePoint:
@@ -37,12 +39,29 @@ class ConvergencePoint:
     score: float
 
 
+def _is_fuzzy_phoneme_sequence_match(seq1: List[str], seq2: List[str]) -> bool:
+    if len(seq1) != len(seq2):
+        return False
+
+    mismatch_count = 0
+    for p1, p2 in zip(seq1, seq2):
+        if p1 != p2:
+            if phoneme_distance(p1, p2) >= 0.5:
+                return False
+            mismatch_count += 1
+            if mismatch_count > 1:
+                return False
+
+    return mismatch_count == 1
+
+
 def find_convergence_points(
     prefix_trie: nx.DiGraph,
     suffix_trie: nx.DiGraph,
     entries: List[Any],
     k: int = 10,
     distinctness_threshold: float = 0.5,
+    fuzzy: bool = False,
 ) -> List[ConvergencePoint]:
     """
     Find the top-K phonetic convergence points for a concept.
@@ -59,6 +78,8 @@ def find_convergence_points(
         suffix_trie: Built suffix trie (right→left)
         entries: List of MatrixEntry objects for the concept
         k: Number of convergence points to return
+        distinctness_threshold: Minimum score difference for deduplication
+        fuzzy: If True, include near-matches (phoneme distance < 0.5) with 0.5x weight
 
     Returns:
         List of top-K ConvergencePoint objects, sorted by descending score.
@@ -66,7 +87,12 @@ def find_convergence_points(
     # 1. Pre-compute language speaker counts for O(1) lookup during intersection scoring
     lang_speakers = {entry.language_id: entry.speaker_count for entry in entries}
 
-    # 2. Collect all valid (prefix_id, suffix_id) split pairs from actual entries
+    # 2. Pre-compute phoneme sequences by language for fuzzy matching
+    lang_phonemes = (
+        {entry.language_id: entry.phonemes for entry in entries} if fuzzy else {}
+    )
+
+    # 3. Collect all valid (prefix_id, suffix_id) split pairs from actual entries
     # We only consider pairs that naturally occur in at least one language's word
     split_pairs = set()
     for entry in entries:
@@ -94,11 +120,32 @@ def find_convergence_points(
         # The core insight: which languages share THIS specific prefix AND suffix?
         intersect_langs = p_langs & s_langs
 
-        if not intersect_langs:
+        # Fuzzy matching: extend with near-matches if enabled
+        fuzzy_langs = set()
+        if fuzzy and intersect_langs:
+            non_exact_langs = (p_langs | s_langs) - intersect_langs
+            if non_exact_langs:
+                for exact_lang_id in intersect_langs:
+                    exact_phonemes = lang_phonemes.get(exact_lang_id)
+                    if not exact_phonemes:
+                        continue
+
+                    for lang_id in non_exact_langs:
+                        if lang_id in fuzzy_langs:
+                            continue
+                        lang_seq = lang_phonemes.get(lang_id)
+                        if lang_seq and _is_fuzzy_phoneme_sequence_match(
+                            lang_seq, exact_phonemes
+                        ):
+                            fuzzy_langs.add(lang_id)
+
+        if not intersect_langs and not fuzzy_langs:
             continue
 
         # 4. Score the convergence point
-        speaker_count = sum(lang_speakers.get(lang, 0) for lang in intersect_langs)
+        exact_speakers = sum(lang_speakers.get(lang, 0) for lang in intersect_langs)
+        fuzzy_speakers = sum(lang_speakers.get(lang, 0) for lang in fuzzy_langs)
+        speaker_count = exact_speakers + int(0.5 * fuzzy_speakers)
 
         # Depth indicates phonetic specificity (longer sequences = higher depth)
         p_depth = prefix_trie.nodes[prefix_id]["depth"]
@@ -119,7 +166,7 @@ def find_convergence_points(
         point = ConvergencePoint(
             prefix_phonemes=p_seq,
             suffix_phonemes=s_seq,
-            languages=intersect_langs,
+            languages=intersect_langs | fuzzy_langs,
             speaker_count=speaker_count,
             depth=depth,
             score=score,

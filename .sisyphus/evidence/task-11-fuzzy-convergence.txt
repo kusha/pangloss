@@ -1,0 +1,4 @@
+Cache hit: loaded 40 concepts from cache
+Exact: 20 points, max languages in best: 18
+Fuzzy: 20 points, max languages in best: 98
+✓ Verification passed

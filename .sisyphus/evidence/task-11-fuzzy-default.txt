@@ -1,0 +1,2 @@
+Fuzzy parameter defaults to False (backward compatible)
+✓ Verification passed

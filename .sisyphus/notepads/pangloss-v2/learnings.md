@@ -640,3 +640,129 @@ Evidence saved: `.sisyphus/evidence/task-10-phoneme-distance.txt`
 - Functions work with normalized or non-normalized phonemes
 - Compatible with ASJP multi-character sequences (tʃ, dʒ, aː)
 - Ready for fuzzy matching in cognate detection (Task 11)
+
+---
+## Task 12: Matrix Caching (2026-03-05)
+
+### Implementation
+- Added JSON-based caching to `build_matrix()` in `pangloss/data/matrix.py`
+- Cache location: `data/matrix_cache.json` (project root)
+- Added `--no-cache` flag to CLI `generate` command
+
+### Cache Invalidation Strategy
+- Uses file stat (mtime + size) hashing, NOT content hashing
+- Tracks 4 input files:
+  - `data/asjp/cldf/forms.csv` (51MB)
+  - `data/asjp/cldf/parameters.csv` (2KB)
+  - `data/asjp/cldf/languages.csv` (3.3MB)
+  - `data/speakers.json` (240KB)
+- Cache version: "2" (allows future format changes)
+
+### Serialization Details
+- ConceptEntry dataclasses → JSON dicts
+- Sets → sorted lists (JSON compatible)
+- MatrixEntry nested dataclasses → nested dicts
+- Deserialization reconstructs exact dataclass instances
+
+### Path Resolution Gotcha
+- `__file__` in matrix.py: `pangloss/data/matrix.py`
+- Project root is 3 levels up: `Path(__file__).parent.parent.parent`
+- speakers.json is at `data/speakers.json` (project root), NOT `pangloss/data/speakers.json`
+
+### Performance Impact
+- Matrix building: ~5-6 second speedup with cache (59s → 54s total pipeline)
+- Small relative speedup because convergence algorithms dominate runtime
+- Cache useful for development iteration (avoids re-parsing 51MB CSV)
+
+### QA Results (All Pass)
+1. ✓ Cache created on first run: `data/matrix_cache.json` with 40 concepts
+2. ✓ Second run uses cache: "Cache hit" message, 5-6s faster
+3. ✓ `--no-cache` bypasses cache: "Matrix built" instead of "Cache hit"
+4. ✓ Stale cache invalidated: "Cache invalidated: input files changed" after touch
+
+### API Changes
+- `build_matrix()` signature extended:
+  - `no_cache: bool = False` - bypass cache flag
+  - `cache_path: Optional[Path] = None` - override cache location
+  - `data_dir: Optional[Path] = None` - ASJP data dir for hash validation
+- Backward compatible (all new params optional)
+
+### Evidence Files
+- `.sisyphus/evidence/task-12-cache-created.txt`
+- `.sisyphus/evidence/task-12-cache-hit.txt`
+- `.sisyphus/evidence/task-12-no-cache.txt`
+- `.sisyphus/evidence/task-12-cache-invalidation.txt`
+
+
+---
+## Task 11: Fuzzy Phoneme Matching Integration (2026-03-05)
+
+### Implementation Summary
+Integrated fuzzy phoneme matching into convergence.py and generator.py to allow near-matches based on articulatory features.
+
+### Key Changes
+1. **convergence.py**:
+   - Added `fuzzy: bool = False` parameter to `find_convergence_points()`
+   - Helper function `_is_fuzzy_phoneme_sequence_match()` checks if two sequences differ by ≤1 phoneme with distance < 0.5
+   - Pre-compute `lang_phonemes` dict for O(1) lookup instead of nested loops
+   - Fuzzy languages get 0.5x weight discount: `speaker_count = exact_speakers + int(0.5 * fuzzy_speakers)`
+   - ConvergencePoint.languages includes both exact and fuzzy matches
+
+2. **generator.py**:
+   - Added `fuzzy: bool = False` parameter to `generate_word()`
+   - Updated `get_intersection()` inner function to apply same fuzzy matching logic
+   - Pre-compute `lang_phonemes` dict at function level for efficiency
+
+### Performance Optimizations
+- **Critical**: Pre-compute `lang_phonemes` dict once instead of rebuilding for each split pair
+- Avoided O(n³) by checking only `intersect` languages as reference points
+- Early exit when `lang_id in fuzzy_langs` to avoid duplicate checks
+
+### Verification Results
+- **Exact matching**: 20 points, max 18 languages in best convergence point
+- **Fuzzy matching**: 20 points, max 98 languages in best convergence point
+- **Impact**: 5.4x increase in language coverage for top convergence points
+- **Backward compatibility**: `fuzzy=False` default ensures no breaking changes
+
+### Algorithm Design
+Fuzzy matching algorithm:
+1. Compute exact intersection first (as before)
+2. If fuzzy enabled and exact intersection exists:
+   - Get non-exact languages: `(p_langs | s_langs) - intersect_langs`
+   - For each exact match language, compare its phoneme sequence with non-exact languages
+   - If `_is_fuzzy_phoneme_sequence_match()` returns True, add to `fuzzy_langs`
+3. Combine speakers: `exact_speakers + 0.5 * fuzzy_speakers`
+
+### Helper Function
+```python
+def _is_fuzzy_phoneme_sequence_match(seq1: List[str], seq2: List[str]) -> bool:
+    if len(seq1) != len(seq2):
+        return False
+    
+    mismatch_count = 0
+    for p1, p2 in zip(seq1, seq2):
+        if p1 != p2:
+            if phoneme_distance(p1, p2) >= 0.5:
+                return False
+            mismatch_count += 1
+            if mismatch_count > 1:
+                return False
+    
+    return mismatch_count == 1
+```
+
+Criteria:
+- Same length sequences only
+- Exactly 1 mismatch
+- Mismatch phoneme distance < 0.5 (uses Task 10's `phoneme_distance()`)
+
+### Import Dependencies
+- `from pangloss.data.phonemes import phoneme_distance` (Task 10)
+- `from pangloss.algo.convergence import _is_fuzzy_phoneme_sequence_match` (generator.py imports from convergence.py)
+
+### Evidence Files
+- `.sisyphus/evidence/task-11-fuzzy-convergence.txt`: Fuzzy increases coverage 18→98 languages
+- `.sisyphus/evidence/task-11-fuzzy-default.txt`: Parameter defaults to False (backward compatible)
+
+### Next Steps
+Task 13 will add CLI flags `--fuzzy` to expose this functionality to users.
