@@ -1,10 +1,43 @@
-=== Task 13 QA: CLI Tuning Knobs ===
-Command: python -m pangloss generate --convergence-k 5 --max-word-length 4 --min-speakers 1000000 --concept water --verbose
+============================================================
+Pangloss Pipeline: Phonetic Convergence-Based Synthesis
+============================================================
+Data directory: data/asjp
+Output directory: output
+Coverage threshold: 90.0%
+Output format: json
+Convergence k: 5
+Max word length: 4
+Min speakers: 1000000
+Single concept mode: water
+============================================================
 
-Result: exit 0
-Convergence k: 5 (5 synonyms produced)
-Max word length: 4 (applied to generation)
-Min speakers: 1000000 (filtered to 5 languages from ~1800)
-Concept: water (resolved via * prefix normalization)
+[1/3] Loading ASJP data...
+  ✓ Loaded 40 concepts
 
-VERDICT: PASS — all 3 CLI knobs accepted and applied
+[2/3] Loading speaker counts...
+  ✓ Loaded 10719 language population entries
+
+[3/3] Building language-concept matrix...
+Cache hit: loaded 40 concepts from cache
+  ✓ Matrix built with 40 concepts
+
+============================================================
+Processing concepts...
+============================================================
+✓ *water: 4 synonyms, 17.7% coverage
+
+============================================================
+Saving outputs...
+============================================================
+  ✓ Dictionary saved to output/dictionary.json
+  ✓ Summary saved to output/summary.json
+  ✓ 1 graph files saved to output/graphs/
+
+============================================================
+Pipeline complete: 1/1 concepts processed
+Average coverage: 52.1%
+Average synonyms per concept: 4.0
+Total unique languages: 57
+Total unique families: 4
+Output written to: output/
+============================================================

@@ -1,9 +1,43 @@
-=== Task 13 QA: Single Concept YAML Mode ===
-Command: python -m pangloss generate --concept water --verbose --format yaml
+============================================================
+Pangloss Pipeline: Phonetic Convergence-Based Synthesis
+============================================================
+Data directory: data/asjp
+Output directory: output
+Coverage threshold: 90.0%
+Output format: yaml
+Convergence k: 20
+Max word length: 8
+Min speakers: 500000
+Single concept mode: water
+============================================================
 
-Result: exit 0
-output/dictionary.yaml exists (10498 bytes)
-Contains only water concept
-YAML format valid
+[1/3] Loading ASJP data...
+  ✓ Loaded 40 concepts
 
-VERDICT: PASS
+[2/3] Loading speaker counts...
+  ✓ Loaded 10719 language population entries
+
+[3/3] Building language-concept matrix...
+Cache hit: loaded 40 concepts from cache
+  ✓ Matrix built with 40 concepts
+
+============================================================
+Processing concepts...
+============================================================
+✓ *water: 16 synonyms, 17.5% coverage
+
+============================================================
+Saving outputs...
+============================================================
+  ✓ Dictionary saved to output/dictionary.yaml
+  ✓ Summary saved to output/summary.json
+  ✓ 1 graph files saved to output/graphs/
+
+============================================================
+Pipeline complete: 1/1 concepts processed
+Average coverage: 71.7%
+Average synonyms per concept: 16.0
+Total unique languages: 138
+Total unique families: 11
+Output written to: output/
+============================================================

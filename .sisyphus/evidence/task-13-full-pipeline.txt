@@ -1,15 +1,82 @@
-=== Task 13 QA: Full Pipeline with All Improvements ===
-Total concepts: 40
-Avg coverage: 13.76%
-Min coverage: 3.58%
-Max coverage: 37.79%
-Avg synonyms: 7.42
-Unique languages: 1976
-Unique families: 122
-Collision report present: True
-Exact collisions: 0
-Near collisions: 0
-Within-concept: 18
-Graph files: 40 (verified via pipeline output)
+============================================================
+Pangloss Pipeline: Phonetic Convergence-Based Synthesis
+============================================================
+Data directory: data/asjp
+Output directory: output
+Coverage threshold: 90.0%
+Output format: json
+Convergence k: 30
+Max word length: 6
+Min speakers: 500000
+============================================================
 
-VERDICT: PASS — 40/40 concepts, all features wired, pipeline clean
+[1/3] Loading ASJP data...
+  ✓ Loaded 40 concepts
+
+[2/3] Loading speaker counts...
+  ✓ Loaded 10719 language population entries
+
+[3/3] Building language-concept matrix...
+Matrix built: 40 concepts, 1024 unmapped languages
+Cache saved: 40 concepts to /Users/kusha/Sources/pangloss/data/matrix_cache.json
+  ✓ Matrix built with 40 concepts
+
+============================================================
+Processing concepts...
+============================================================
+✓ *I: 18 synonyms, 13.4% coverage
+✓ *you: 24 synonyms, 23.9% coverage
+✓ *we: 23 synonyms, 18.5% coverage
+✓ *one: 26 synonyms, 17.7% coverage
+✓ *two: 22 synonyms, 18.9% coverage
+✓ *person: 26 synonyms, 17.6% coverage
+✓ *fish: 23 synonyms, 20.4% coverage
+✓ *dog: 21 synonyms, 17.8% coverage
+✓ *louse: 25 synonyms, 21.4% coverage
+✓ *tree: 24 synonyms, 20.3% coverage
+✓ *leaf: 19 synonyms, 18.2% coverage
+✓ *skin: 22 synonyms, 18.3% coverage
+✓ *blood: 23 synonyms, 18.1% coverage
+✓ *bone: 25 synonyms, 18.5% coverage
+✓ *horn: 26 synonyms, 21.2% coverage
+✓ *ear: 26 synonyms, 18.6% coverage
+✓ *eye: 23 synonyms, 10.0% coverage
+✓ *nose: 22 synonyms, 19.7% coverage
+✓ *tooth: 25 synonyms, 17.7% coverage
+✓ *tongue: 26 synonyms, 18.2% coverage
+✓ *knee: 25 synonyms, 18.6% coverage
+✓ *hand: 23 synonyms, 13.3% coverage
+✓ *breasts: 27 synonyms, 18.9% coverage
+✓ *liver: 24 synonyms, 19.1% coverage
+✓ *drink: 25 synonyms, 18.2% coverage
+✓ *see: 21 synonyms, 18.3% coverage
+✓ *hear: 23 synonyms, 17.7% coverage
+✓ *die: 22 synonyms, 19.1% coverage
+✓ *come: 24 synonyms, 18.1% coverage
+✓ *sun: 24 synonyms, 18.3% coverage
+✓ *star: 25 synonyms, 18.5% coverage
+✓ *water: 24 synonyms, 17.5% coverage
+✓ *stone: 25 synonyms, 18.6% coverage
+✓ *fire: 23 synonyms, 17.8% coverage
+✓ *path: 22 synonyms, 17.6% coverage
+✓ *mountain: 25 synonyms, 18.2% coverage
+✓ *night: 25 synonyms, 18.1% coverage
+✓ *full: 24 synonyms, 20.2% coverage
+✓ *new: 16 synonyms, 29.3% coverage
+✓ *name: 23 synonyms, 26.5% coverage
+
+============================================================
+Saving outputs...
+============================================================
+  ✓ Dictionary saved to output/dictionary.json
+  ✓ Summary saved to output/summary.json
+  ✓ 40 graph files saved to output/graphs/
+
+============================================================
+Pipeline complete: 40/40 concepts processed
+Average coverage: 79.1%
+Average synonyms per concept: 23.5
+Total unique languages: 950
+Total unique families: 33
+Output written to: output/
+============================================================
