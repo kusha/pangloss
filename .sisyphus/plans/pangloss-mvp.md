@@ -1136,7 +1136,7 @@ Max Concurrent: 4 (Waves 1 & 2)
   - Message: `feat(output): add bowtie graph JSON exporter`
   - Files: `pangloss/output/graph_export.py`
 
-- [ ] 13. CLI Entry Point + Full Pipeline Integration
+- [x] 13. CLI Entry Point + Full Pipeline Integration
 
   **What to do**:
   - Implement `pangloss/cli.py` using Click framework

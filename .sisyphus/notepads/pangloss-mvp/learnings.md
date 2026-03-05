@@ -450,3 +450,79 @@ Sample entry: MatrixEntry(
 3. Prefixing node IDs is clean solution for merging multiple graph structures
 4. Validation should be separate function to enable reuse and testing
 5. Graph-level metadata (stored in graph.graph dict) is preserved during serialization
+
+## [2026-03-05 02:34:56] Task 13: CLI Entry Point + Full Pipeline Integration
+
+### CLI Design
+- Click command: `python -m pangloss generate`
+- Options implemented:
+  - `--data-dir` (default: data/asjp): Path to ASJP data directory
+  - `--output-dir` (default: output): Output directory for results
+  - `--coverage-threshold` (default: 0.9): Target coverage threshold (0.0-1.0)
+  - `--concept` (optional): Process single concept instead of all 40
+  - `--format` (default: json): Output format (json or yaml)
+  - `--verbose` (flag): Print per-concept progress
+- Error handling: Try-catch per concept allows graceful degradation (if one concept fails, log and continue)
+- Progress output: Checkmarks (✓) with concept name, synonym count, coverage percentage
+
+### Pipeline Integration
+- Full pipeline flow successfully wired together:
+  1. Load ASJP data (40 concepts)
+  2. Load speaker counts (10,719 language population entries)
+  3. Build matrix (40 concepts with enriched metadata)
+  4. For each concept: build tries → convergence detection → word generation → synonym selection → graph export
+  5. Save dictionary.json and summary.json
+- Processing time: ~60-90 seconds for all 40 concepts on local machine
+- Single-concept mode: Filters matrix before processing, useful for debugging
+- Exit code: 0 on success (all or partial concepts processed), 1 on total failure
+
+### Output Structure
+- `output/dictionary.json`: All concepts with synonyms, coverage, families (998KB for 40 concepts)
+- `output/summary.json`: Aggregate stats (262B)
+  - Total: 40 concepts, 771 synonyms, 6,054 unique languages, 301 unique families
+  - Coverage: avg 36.2%, range 8.7% (knee) to 77.0% (dog)
+  - Synonyms: avg 19.3 per concept, range 12-20
+- `output/graphs/*.json`: 41 per-concept bowtie graphs (40 concepts + 1 from single-concept test)
+
+### Key Learnings
+1. **Concept Names Require Asterisks**: ASJP uses `*water`, `*fire` format (not `water`, `fire`)
+   - Single-concept mode must use: `--concept '*water'` (with quotes to escape shell)
+   - Error message lists available concepts when user provides wrong name
+2. **Summary Field Names**: format_summary() returns `avg_synonym_count`, not `total_synonyms`
+   - Fixed CLI to use correct summary fields from dictionary.py
+3. **All 40 Concepts Processed Successfully**: No failed concepts in full pipeline run
+   - Robust error handling prevents cascade failures
+   - Each concept wrapped in try-catch with stderr logging
+4. **Coverage Distribution**: Wide variance across concepts
+   - High coverage (>50%): dog (77.0%), fish (73.8%), one (71.4%), skin (71.3%), fire (58.6%), path (54.0%), name (53.7%)
+   - Low coverage (<20%): knee (8.7%), night (9.3%), eye (13.4%), tongue (14.8%), two (15.6%), we (16.0%)
+   - Indicates some concepts have higher phonetic convergence than others
+5. **Performance Bottleneck**: Matrix building takes ~30 seconds (normalization + speaker lookup)
+   - Convergence detection + word generation for 40 concepts: ~30-40 seconds
+   - Graph export (writing JSON): ~10-20 seconds
+   - Total pipeline: ~60-90 seconds for full run
+6. **Evidence File Created**: `.sisyphus/evidence/task-13-full-pipeline.txt` captures full stdout/stderr
+   - Includes both full pipeline run (40 concepts) and single-concept test (*water)
+   - Demonstrates exit code 0, all output files created, correct structure
+
+### Pipeline Robustness
+- Graceful degradation: Failed concepts logged but don't stop pipeline
+- Input validation: Coverage threshold checked (0.0-1.0), concept name verified against matrix
+- Output directory creation: Automatically creates output/ and output/graphs/ if missing
+- Empty results handling: Exits with code 1 if ALL concepts fail (prevents writing empty dictionary)
+- Progress feedback: Verbose mode prints 3-phase loading, per-concept results, final summary
+
+### Integration Success
+- All 12 previously completed modules wire together cleanly
+- No circular import issues
+- Module APIs match as expected (load_asjp, build_matrix, build_prefix_trie, etc.)
+- SyntheticWord dataclass used consistently across generator → selector → dictionary formatter
+- MatrixEntry passed through to format_dictionary() for family extraction
+
+### Future Enhancements (Noted for Post-MVP)
+- Parallel processing for concepts (async or multiprocessing)
+- Caching for matrix building (avoid re-parsing ASJP on repeated runs)
+- Progress bar (tqdm) instead of checkmarks
+- JSON streaming for large dictionaries (currently loads all in memory)
+- Configurable convergence point count (k=20 hardcoded, could be CLI option)
+
