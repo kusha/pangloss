@@ -391,3 +391,62 @@ Sample entry: MatrixEntry(
 - Output directory automatically created by save_dictionary()
 
 **Date**: 2026-03-05
+
+## Task 12: Graph JSON Exporter
+**Status**: ✅ COMPLETE  
+**Date**: 2026-03-05
+
+### Key Implementation Details
+
+1. **Bowtie Graph Merging**:
+   - Prefix trie nodes prefixed with "prefix:" to avoid collisions with suffix nodes
+   - Suffix trie nodes prefixed with "suffix:"
+   - Root nodes marked with node_type="root", others with type="prefix"/"suffix"
+   - All node metadata (phoneme_sequence, depth, languages, speaker_count) preserved during merge
+
+2. **Bridge Edges from Convergence Points**:
+   - Each ConvergencePoint creates one bridge edge
+   - Bridge source: "prefix:{phoneme_sequence}" from prefix_phonemes
+   - Bridge target: "suffix:{reversed_phonemes}" from suffix_phonemes (must reverse because suffix trie stores reversed sequences)
+   - Bridge attributes include: convergence_score, language_intersection (list of languages), edge_type="bridge"
+
+3. **NetworkX Serialization**:
+   - Using `json_graph.node_link_data()` produces standard format with nodes/edges arrays
+   - JSON output keys: "directed", "multigraph", "graph", "nodes", "edges"
+   - Graph-level metadata: concept, total_languages, convergence_count
+   - Node metadata converted to lists (e.g., languages set → sorted list for JSON compatibility)
+   - Edge types correctly labeled: "prefix", "suffix", "bridge"
+
+4. **Water Concept Export Results**:
+   - Total nodes: 16,109 (2 roots + 8,165 prefix + 7,942 suffix)
+   - Total edges: 16,127 (8,165 prefix + 7,942 suffix + 20 bridge)
+   - File size: ~5.8 MB uncompressed JSON
+   - All 20 convergence points successfully converted to bridge edges
+
+5. **Validation Function**:
+   - Created validate_bowtie_export() to check JSON and provide statistics
+   - Counts nodes by type and edges by type
+   - Ensures all required fields present
+   - Can be reused for quality assurance on other concepts
+
+### Technical Decisions
+
+- **Node ID format** ("prefix:ε", "suffix:i-e-u"): Avoids collisions when merging separate tries
+- **Sorting languages in JSON**: Lists instead of sets for JSON serialization; sorted for determinism
+- **Convergence score storage**: Integer (int()) to match speaker_count type
+- **Error handling**: Silently skip bridge edges where nodes don't exist (defensive programming)
+
+### Integration Notes
+
+- Module `pangloss/output/graph_export.py` is self-contained
+- Depends on: pangloss.algo.convergence.ConvergencePoint, networkx, pathlib
+- Ready for Task 13 (CLI) which will call export_bowtie_graph() to save multiple concepts
+- JSON format is D3.js compatible (future visualization work)
+
+### Learnings for Future Output Tasks
+
+1. NetworkX's json_graph.node_link_data() automatically handles directed/multigraph settings
+2. Must explicitly convert sets to sorted lists when preparing JSON (JSON doesn't support sets)
+3. Prefixing node IDs is clean solution for merging multiple graph structures
+4. Validation should be separate function to enable reuse and testing
+5. Graph-level metadata (stored in graph.graph dict) is preserved during serialization

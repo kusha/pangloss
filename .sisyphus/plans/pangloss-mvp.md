@@ -1065,7 +1065,7 @@ Max Concurrent: 4 (Waves 1 & 2)
   - Message: `feat(output): add dictionary and summary JSON formatters`
   - Files: `pangloss/output/dictionary.py`
 
-- [ ] 12. Graph JSON Exporter
+- [x] 12. Graph JSON Exporter
 
   **What to do**:
   - Create `pangloss/output/graph_export.py` module
