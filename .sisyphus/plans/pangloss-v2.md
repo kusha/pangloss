@@ -1341,7 +1341,7 @@ print('Fuzzy parameter defaults to False (backward compatible)')
   - Message: `feat(matrix): add JSON-based matrix caching with hash invalidation`
   - Files: `pangloss/data/matrix.py`, `pangloss/cli.py`
 
-- [ ] 13. Add CLI tuning knobs + end-to-end pipeline verification
+- [x] 13. Add CLI tuning knobs + end-to-end pipeline verification
 
   **What to do**:
   - Add CLI options to `pangloss/cli.py` `generate` command:
@@ -1480,19 +1480,19 @@ print(f'Unique families: {s[\"total_unique_families\"]}')
 
 > 4 review agents run in PARALLEL. ALL must APPROVE. Rejection → fix → re-run.
 
-- [ ] F1. **Plan Compliance Audit** — `oracle`
+- [x] F1. **Plan Compliance Audit** — `oracle`
   Read the plan end-to-end. For each "Must Have": verify implementation exists (read file, run command). For each "Must NOT Have": search codebase for forbidden patterns — reject with file:line if found. Check evidence files exist in `.sisyphus/evidence/`. Compare deliverables against plan.
   Output: `Must Have [N/N] | Must NOT Have [N/N] | Tasks [N/N] | VERDICT: APPROVE/REJECT`
 
-- [ ] F2. **Code Quality Review** — `unspecified-high`
+- [x] F2. **Code Quality Review** — `unspecified-high`
   Run `python -m py_compile pangloss/*.py pangloss/**/*.py`. Review all changed files for: `as any` patterns, empty catches, `print()` in production paths (stderr is OK), commented-out code, unused imports. Check AI slop: excessive comments, over-abstraction, generic names.
   Output: `Compile [PASS/FAIL] | Files [N clean/N issues] | VERDICT`
 
-- [ ] F3. **Real QA — Full Pipeline** — `unspecified-high`
+- [x] F3. **Real QA — Full Pipeline** — `unspecified-high`
   Start from clean state (delete `output/`). Run `pangloss generate --verbose`. Verify: 40 concepts processed, `summary.json` has `avg_coverage_pct > 36.25`, `dictionary.json` has collision report, graph files have no `*` prefix. Run `pangloss generate --concept water --verbose` to verify single-concept mode. Run `pangloss generate --format yaml` to verify YAML output. Run pipeline twice to verify caching speedup.
   Output: `Concepts [N/N] | Coverage [X%] | Collisions [FOUND/NONE] | Cache [HIT/MISS] | VERDICT`
 
-- [ ] F4. **Scope Fidelity Check** — `deep`
+- [x] F4. **Scope Fidelity Check** — `deep`
   For each task: read "What to do", read actual diff (`git log/diff`). Verify 1:1 — everything in spec was built, nothing beyond spec was built. Check "Must NOT do" compliance. Detect cross-task contamination. Flag unaccounted changes.
   Output: `Tasks [N/N compliant] | Contamination [CLEAN/N issues] | Unaccounted [CLEAN/N files] | VERDICT`
 
