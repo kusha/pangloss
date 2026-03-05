@@ -903,7 +903,7 @@ Max Concurrent: 4 (Waves 1 & 2)
   - Message: `feat(algo): implement greedy outward word generation from convergence points`
   - Files: `pangloss/algo/generator.py`
 
-- [ ] 10. Synonym Selector — Weighted Set Cover
+- [x] 10. Synonym Selector — Weighted Set Cover
 
   **What to do**:
   - Create `pangloss/algo/selector.py` module

@@ -1,0 +1,151 @@
+TASK 10: SYNONYM SELECTOR — WATER CONCEPT AT 90% THRESHOLD
+================================================================================
+
+CANDIDATES (Top 20 convergence points):
+   1. shuei        | /ʃuei/          |  71 langs |  62.9B |  27.5%
+   2. suei         | /suei/          |  73 langs |  59.0B |  25.8%
+   3. shi          | /ʃii/           |  83 langs |   9.1B |   4.0%
+   4. shui         | /ʃui/           |  35 langs |   7.4B |   3.2%
+   5. fei          | /fei/           |   8 langs |   5.9B |   2.6%
+   6. sei          | /sei/           |  12 langs |   4.5B |   2.0%
+   7. shei         | /ʃei/           |   7 langs |   3.6B |   1.6%
+   8. shue         | /ʃue/           |   5 langs |   3.1B |   1.4%
+   9. pani         | /pɐni/          | 138 langs |   2.5B |   1.1%
+  10. water        | /wɐtər/         |   5 langs |   1.8B |   0.8%
+  11. shuei        | /ʃuəi/          |   3 langs |   2.0B |   0.9%
+  12. sai          | /sai/           |  18 langs |   2.7B |   1.2%
+  13. shuai        | /ʃuɐi/          |   2 langs |   2.0B |   0.9%
+  14. wote         | /wotə/          |   1 langs |   1.7B |   0.8%
+  15. sue          | /sue/           |   2 langs |   2.0B |   0.9%
+  16. shoi         | /ʃoi/           |   7 langs |   1.6B |   0.7%
+  17. su           | /su/            |  82 langs |   2.3B |   1.0%
+  18. shyei        | /ʃjei/          |   2 langs |   1.0B |   0.5%
+  19. voda         | /vodɐ/          |  28 langs |   1.0B |   0.4%
+  20. lyui         | /ʎui/           |   4 langs |   1.1B |   0.5%
+
+SELECTED SYNONYMS (90% threshold):
+
+1. shuei
+   IPA:            /ʃuei/
+   Coverage delta: 62.9B speakers
+   Languages:      71 covered
+   Cumulative:     62.9B (27.5%) | 71 unique languages
+
+2. suei
+   IPA:            /suei/
+   Coverage delta: 59.0B speakers
+   Languages:      73 covered
+   Cumulative:     121.9B (53.2%) | 144 unique languages
+
+3. shi
+   IPA:            /ʃii/
+   Coverage delta: 9.1B speakers
+   Languages:      83 covered
+   Cumulative:     131.0B (57.2%) | 227 unique languages
+
+4. shui
+   IPA:            /ʃui/
+   Coverage delta: 7.4B speakers
+   Languages:      35 covered
+   Cumulative:     138.3B (60.4%) | 262 unique languages
+
+5. fei
+   IPA:            /fei/
+   Coverage delta: 5.9B speakers
+   Languages:      8 covered
+   Cumulative:     144.3B (63.0%) | 270 unique languages
+
+6. sei
+   IPA:            /sei/
+   Coverage delta: 4.2B speakers
+   Languages:      12 covered
+   Cumulative:     148.4B (64.8%) | 281 unique languages
+
+7. shei
+   IPA:            /ʃei/
+   Coverage delta: 3.6B speakers
+   Languages:      7 covered
+   Cumulative:     152.0B (66.4%) | 288 unique languages
+
+8. shue
+   IPA:            /ʃue/
+   Coverage delta: 3.1B speakers
+   Languages:      5 covered
+   Cumulative:     155.1B (67.7%) | 293 unique languages
+
+9. sai
+   IPA:            /sai/
+   Coverage delta: 2.7B speakers
+   Languages:      18 covered
+   Cumulative:     157.8B (68.9%) | 311 unique languages
+
+10. pani
+   IPA:            /pɐni/
+   Coverage delta: 2.5B speakers
+   Languages:      138 covered
+   Cumulative:     160.3B (70.0%) | 449 unique languages
+
+11. su
+   IPA:            /su/
+   Coverage delta: 2.3B speakers
+   Languages:      82 covered
+   Cumulative:     162.6B (71.0%) | 531 unique languages
+
+12. shuei
+   IPA:            /ʃuəi/
+   Coverage delta: 2.0B speakers
+   Languages:      3 covered
+   Cumulative:     164.6B (71.9%) | 534 unique languages
+
+13. shuai
+   IPA:            /ʃuɐi/
+   Coverage delta: 2.0B speakers
+   Languages:      2 covered
+   Cumulative:     166.6B (72.7%) | 536 unique languages
+
+14. sue
+   IPA:            /sue/
+   Coverage delta: 2.0B speakers
+   Languages:      2 covered
+   Cumulative:     168.5B (73.6%) | 538 unique languages
+
+15. water
+   IPA:            /wɐtər/
+   Coverage delta: 1.8B speakers
+   Languages:      5 covered
+   Cumulative:     170.3B (74.4%) | 543 unique languages
+
+16. wote
+   IPA:            /wotə/
+   Coverage delta: 1.7B speakers
+   Languages:      1 covered
+   Cumulative:     172.0B (75.1%) | 544 unique languages
+
+17. shoi
+   IPA:            /ʃoi/
+   Coverage delta: 1.6B speakers
+   Languages:      7 covered
+   Cumulative:     173.7B (75.9%) | 551 unique languages
+
+18. lyui
+   IPA:            /ʎui/
+   Coverage delta: 1.1B speakers
+   Languages:      4 covered
+   Cumulative:     174.8B (76.3%) | 555 unique languages
+
+19. shyei
+   IPA:            /ʃjei/
+   Coverage delta: 1.0B speakers
+   Languages:      2 covered
+   Cumulative:     175.8B (76.8%) | 557 unique languages
+
+20. voda
+   IPA:            /vodɐ/
+   Coverage delta: 1.0B speakers
+   Languages:      28 covered
+   Cumulative:     176.8B (77.2%) | 585 unique languages
+
+FINAL STATS:
+  Total coverage:  176.8B (77.2%)
+  Languages:       585 of 11873
+  Synonyms:        20

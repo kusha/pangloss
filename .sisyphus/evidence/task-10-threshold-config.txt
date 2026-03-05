@@ -1,0 +1,22 @@
+TASK 10: SYNONYM SELECTOR — CONFIGURABLE THRESHOLDS
+================================================================================
+
+Testing threshold configurability on water concept:
+
+Threshold:  50.0%
+  Synonyms selected: 2
+  Coverage:          121.9B ( 53.2%)
+  Languages:         144
+
+Threshold:  90.0%
+  Synonyms selected: 20
+  Coverage:          176.8B ( 77.2%)
+  Languages:         585
+
+Threshold:  99.0%
+  Synonyms selected: 20
+  Coverage:          176.8B ( 77.2%)
+  Languages:         585
+
+VERIFICATION:
+  ✓ Monotonicity: Higher thresholds require more synonyms
