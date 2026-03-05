@@ -1,0 +1,10 @@
+=== Task 13 QA: CLI Tuning Knobs ===
+Command: python -m pangloss generate --convergence-k 5 --max-word-length 4 --min-speakers 1000000 --concept water --verbose
+
+Result: exit 0
+Convergence k: 5 (5 synonyms produced)
+Max word length: 4 (applied to generation)
+Min speakers: 1000000 (filtered to 5 languages from ~1800)
+Concept: water (resolved via * prefix normalization)
+
+VERDICT: PASS — all 3 CLI knobs accepted and applied

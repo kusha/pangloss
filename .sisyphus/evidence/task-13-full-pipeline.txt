@@ -1,118 +1,15 @@
-============================================================
-Pangloss Pipeline: Phonetic Convergence-Based Synthesis
-============================================================
-Data directory: data/asjp
-Output directory: output
-Coverage threshold: 90.0%
-Output format: json
-============================================================
+=== Task 13 QA: Full Pipeline with All Improvements ===
+Total concepts: 40
+Avg coverage: 13.76%
+Min coverage: 3.58%
+Max coverage: 37.79%
+Avg synonyms: 7.42
+Unique languages: 1976
+Unique families: 122
+Collision report present: True
+Exact collisions: 0
+Near collisions: 0
+Within-concept: 18
+Graph files: 40 (verified via pipeline output)
 
-[1/3] Loading ASJP data...
-  ✓ Loaded 40 concepts
-
-[2/3] Loading speaker counts...
-  ✓ Loaded 10719 language population entries
-
-[3/3] Building language-concept matrix...
-Matrix built: 40 concepts, 1024 unmapped languages
-  ✓ Matrix built with 40 concepts
-
-============================================================
-Processing concepts...
-============================================================
-✓ *I: 20 synonyms, 31.2% coverage
-✓ *you: 18 synonyms, 39.3% coverage
-✓ *we: 20 synonyms, 16.0% coverage
-✓ *one: 14 synonyms, 71.4% coverage
-✓ *two: 19 synonyms, 15.6% coverage
-✓ *person: 20 synonyms, 21.6% coverage
-✓ *fish: 20 synonyms, 73.8% coverage
-✓ *dog: 17 synonyms, 77.0% coverage
-✓ *louse: 20 synonyms, 38.7% coverage
-✓ *tree: 19 synonyms, 30.7% coverage
-✓ *leaf: 20 synonyms, 31.0% coverage
-✓ *skin: 20 synonyms, 71.3% coverage
-✓ *blood: 20 synonyms, 30.2% coverage
-✓ *bone: 20 synonyms, 33.2% coverage
-✓ *horn: 20 synonyms, 31.5% coverage
-✓ *ear: 20 synonyms, 25.0% coverage
-✓ *eye: 20 synonyms, 13.4% coverage
-✓ *nose: 20 synonyms, 48.0% coverage
-✓ *tooth: 20 synonyms, 34.6% coverage
-✓ *tongue: 20 synonyms, 14.8% coverage
-✓ *knee: 20 synonyms, 8.7% coverage
-✓ *hand: 19 synonyms, 43.1% coverage
-✓ *breasts: 20 synonyms, 21.3% coverage
-✓ *liver: 20 synonyms, 45.9% coverage
-✓ *drink: 19 synonyms, 48.5% coverage
-✓ *see: 20 synonyms, 30.2% coverage
-✓ *hear: 20 synonyms, 29.2% coverage
-✓ *die: 20 synonyms, 35.2% coverage
-✓ *come: 16 synonyms, 42.9% coverage
-✓ *sun: 20 synonyms, 21.4% coverage
-✓ *star: 20 synonyms, 18.2% coverage
-✓ *water: 20 synonyms, 27.5% coverage
-✓ *stone: 20 synonyms, 32.0% coverage
-✓ *fire: 12 synonyms, 58.6% coverage
-✓ *path: 20 synonyms, 54.0% coverage
-✓ *mountain: 20 synonyms, 28.0% coverage
-✓ *night: 20 synonyms, 9.3% coverage
-✓ *full: 18 synonyms, 47.1% coverage
-✓ *new: 20 synonyms, 47.4% coverage
-✓ *name: 20 synonyms, 53.7% coverage
-
-============================================================
-Saving outputs...
-============================================================
-  ✓ Dictionary saved to output/dictionary.json
-  ✓ Summary saved to output/summary.json
-  ✓ 40 graph files saved to output/graphs/
-
-============================================================
-Pipeline complete: 40/40 concepts processed
-Average coverage: 36.2%
-Average synonyms per concept: 19.3
-Total unique languages: 6054
-Total unique families: 301
-Output written to: output/
-============================================================
-============================================================
-Pangloss Pipeline: Phonetic Convergence-Based Synthesis
-============================================================
-Data directory: data/asjp
-Output directory: output
-Coverage threshold: 90.0%
-Output format: json
-Single concept mode: *water
-============================================================
-
-[1/3] Loading ASJP data...
-  ✓ Loaded 40 concepts
-
-[2/3] Loading speaker counts...
-  ✓ Loaded 10719 language population entries
-
-[3/3] Building language-concept matrix...
-Matrix built: 40 concepts, 1024 unmapped languages
-  ✓ Matrix built with 40 concepts
-
-============================================================
-Processing concepts...
-============================================================
-✓ *water: 20 synonyms, 27.5% coverage
-
-============================================================
-Saving outputs...
-============================================================
-  ✓ Dictionary saved to output/dictionary.json
-  ✓ Summary saved to output/summary.json
-  ✓ 1 graph files saved to output/graphs/
-
-============================================================
-Pipeline complete: 1/1 concepts processed
-Average coverage: 27.5%
-Average synonyms per concept: 20.0
-Total unique languages: 585
-Total unique families: 20
-Output written to: output/
-============================================================
+VERDICT: PASS — 40/40 concepts, all features wired, pipeline clean

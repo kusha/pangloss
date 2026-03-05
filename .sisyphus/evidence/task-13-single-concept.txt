@@ -1,0 +1,9 @@
+=== Task 13 QA: Single Concept YAML Mode ===
+Command: python -m pangloss generate --concept water --verbose --format yaml
+
+Result: exit 0
+output/dictionary.yaml exists (10498 bytes)
+Contains only water concept
+YAML format valid
+
+VERDICT: PASS

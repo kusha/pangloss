@@ -68,8 +68,35 @@ def version():
 )
 @click.option("--verbose", is_flag=True, help="Print per-concept progress")
 @click.option("--no-cache", is_flag=True, help="Force rebuild, bypass matrix cache")
+@click.option(
+    "--convergence-k",
+    default=20,
+    type=int,
+    help="Number of convergence points per concept (default: 20)",
+)
+@click.option(
+    "--max-word-length",
+    default=8,
+    type=int,
+    help="Maximum phoneme count for generated words (default: 8)",
+)
+@click.option(
+    "--min-speakers",
+    default=0,
+    type=int,
+    help="Minimum speaker count to include a language (default: 0)",
+)
 def generate(
-    data_dir, output_dir, coverage_threshold, concept, format_choice, verbose, no_cache
+    data_dir,
+    output_dir,
+    coverage_threshold,
+    concept,
+    format_choice,
+    verbose,
+    no_cache,
+    convergence_k,
+    max_word_length,
+    min_speakers,
 ):
     """Generate synthetic vocabulary from ASJP data."""
     # Validate coverage threshold
@@ -94,6 +121,9 @@ def generate(
         click.echo(f"Output directory: {output_dir}")
         click.echo(f"Coverage threshold: {coverage_threshold:.1%}")
         click.echo(f"Output format: {format_choice}")
+        click.echo(f"Convergence k: {convergence_k}")
+        click.echo(f"Max word length: {max_word_length}")
+        click.echo(f"Min speakers: {min_speakers}")
         if concept:
             click.echo(f"Single concept mode: {concept}")
         click.echo("=" * 60)
@@ -170,13 +200,28 @@ def generate(
 
     for concept_name, concept_entry in matrix.items():
         try:
-            # Build tries
-            prefix_trie = build_prefix_trie(concept_entry.entries)
-            suffix_trie = build_suffix_trie(concept_entry.entries)
+            # Filter entries by min_speakers if specified
+            entries = concept_entry.entries
+            if min_speakers > 0:
+                entries = [e for e in entries if e.speaker_count >= min_speakers]
+                if not entries:
+                    if verbose:
+                        click.echo(
+                            f"⊘ {concept_name}: skipped (no languages with ≥{min_speakers} speakers)"
+                        )
+                    continue
 
-            # Find convergence points (top 20)
+            # Build tries
+            prefix_trie = build_prefix_trie(entries)
+            suffix_trie = build_suffix_trie(entries)
+
+            # Find convergence points
             points = find_convergence_points(
-                prefix_trie, suffix_trie, concept_entry.entries, k=20
+                prefix_trie,
+                suffix_trie,
+                entries,
+                k=convergence_k,
+                fuzzy=True,
             )
 
             # Generate candidate words from convergence points
@@ -185,9 +230,10 @@ def generate(
                     p,
                     prefix_trie,
                     suffix_trie,
-                    concept_entry.entries,
-                    total_speakers=concept_entry.total_speakers,
-                    max_word_length=8,
+                    entries,
+                    total_speakers=concept_entry.total_unique_speakers,
+                    max_word_length=max_word_length,
+                    fuzzy=True,
                 )
                 for p in points
             ]
@@ -197,7 +243,7 @@ def generate(
                 candidates,
                 coverage_threshold,
                 language_to_speakers=concept_entry.language_to_speakers,
-                total_speakers=concept_entry.total_speakers,
+                total_speakers=concept_entry.total_unique_speakers,
             )
 
             # Export graph JSON

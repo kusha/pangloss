@@ -1,0 +1,10 @@
+=== Run 1: No cache (cold start) ===
+[3/3] Building language-concept matrix...
+Matrix built: 40 concepts, 1024 unmapped languages
+Cache saved: 40 concepts to /Users/kusha/Sources/pangloss/data/matrix_cache.json
+  ✓ Matrix built with 40 concepts
+
+=== Run 2: With cache (warm start) ===
+[3/3] Building language-concept matrix...
+Cache hit: loaded 40 concepts from cache
+  ✓ Matrix built with 40 concepts
