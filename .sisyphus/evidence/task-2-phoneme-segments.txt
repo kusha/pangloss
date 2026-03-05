@@ -1,0 +1,30 @@
+ASJP Phoneme Segment Verification
+==================================================
+
+Water concept: *water
+Total forms: 11873
+Forms with empty segments: 0
+Expected: 0
+Status: PASS
+
+Sample water forms with phoneme lists:
+   1. A51_BAFIA_MAJA                 [m o m o]
+   2. A51_BAFIA_TUMI_TINGON          [m ə n i]
+   3. A51_BAFIA_ZAKAAN               [n o ʔ]
+   4. A53_BAFIA_RIKPA                [n u]
+   5. A53_BAFIA_RIKPA                [n i k]
+   6. A54_BAFIA_NJANTI               [ɲ i]
+   7. A60_GUNU                       [i m p o]
+   8. A60_MMAALA                     [d e g ɐ]
+   9. A61_NGORO_ASOM                 [n dʒ i m]
+  10. A62_KALONGE                    [m o m b]
+  11. A62_KALONGE                    [m o m b o]
+  12. A72a_EWONDO                    [n d i m]
+  13. AASAX                          [m ɐ ʔ ɐ]
+  14. ABAGA                          [r i n ɐ i]
+  15. ABANYOM                        [l ə b]
+
+Segment length statistics (water):
+  Min: 1
+  Max: 13
+  Avg: 3.40

@@ -1,0 +1,65 @@
+======================================================================
+QA REPORT: Speaker Counts Extraction and ASJP Mapping
+======================================================================
+
+[TEST 1] Load speaker counts from cache
+✓ Loaded 720 language entries
+
+[TEST 2] Verify major languages have plausible speaker counts
+✓ ENGLISH: 1,733,824,666 speakers (expected: >=1,000,000,000)
+✓ HINDI: 581,727,611 speakers (expected: >=300,000,000)
+✓ SPANISH: 507,599,373 speakers (expected: >=400,000,000)
+✓ PORTUGUESE: 249,463,912 speakers (expected: >=200,000,000)
+✓ BENGALI: 279,893,703 speakers (expected: >=200,000,000)
+✓ FRENCH: 332,956,335 speakers (expected: >=200,000,000)
+
+[TEST 3] Check ISO code fallbacks for unmapped languages
+✓ 211 languages using ISO code fallback
+  Examples: ['ca', 'ara', 'ps', 'bal', 'fas']
+
+[TEST 4] Check ASJP ID mappings
+✓ 509 languages mapped to ASJP IDs
+  Examples: ['ENGLISH', 'SPANISH', 'FRENCH', 'MALAYALAM', 'BALOCHI_WESTERN']
+
+[TEST 5] ASJP language coverage analysis
+✓ ASJP languages with speaker counts: 527 / 11540
+✓ Coverage: 4.6%
+
+[TEST 6] Data sanity checks
+✓ Languages with 0 speakers: 0 (expected: 0)
+✓ Min speakers: 1
+✓ Max speakers: 1,733,824,666
+
+[TEST 7] Top 20 languages by speaker count
+   1. ENGLISH                        1,733,824,666 speakers
+   2. zho                            1,325,522,922 speakers
+   3. HINDI                           581,727,611 speakers
+   4. SPANISH                         507,599,373 speakers
+   5. ara                             378,792,519 speakers
+   6. FRENCH                          332,956,335 speakers
+   7. URDU                            313,093,256 speakers
+   8. BENGALI                         279,893,703 speakers
+   9. PORTUGUESE                      249,463,912 speakers
+  10. pun                             219,603,176 speakers
+  11. BELOGORNOJE                     208,192,512 speakers
+  12. sw                              194,102,078 speakers
+  13. id                              180,519,583 speakers
+  14. CANTONESE                       155,166,300 speakers
+  15. STANDARD_GERMAN                 142,985,673 speakers
+  16. EI_JAPANESE                     117,608,754 speakers
+  17. TELUGU                          101,457,360 speakers
+  18. lah                             100,980,828 speakers
+  19. LAKHER_MARA                      98,707,719 speakers
+  20. MALANG                           96,145,857 speakers
+
+[TEST 8] ISO 639-3 to BCP47 mapping used
+✓ BCP47 to ISO 639-3 mappings: 50
+  Examples: [('en', 'eng'), ('es', 'spa'), ('fr', 'fra'), ('de', 'deu'), ('it', 'ita')]
+
+======================================================================
+SUMMARY
+======================================================================
+Total languages with speaker counts: 720
+Coverage: 4.6% of ASJP language database
+Major languages verified: English (1,733,824,666), Mandarin (1,325,522,922), Spanish (507,599,373)
+✓ All tests passed!

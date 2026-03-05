@@ -1,0 +1,60 @@
+=== Task 4: Phoneme Normalization Pipeline - COMPLETED ===
+
+## Files Created
+✓ pangloss/data/phonemes.py (194 lines, 5.9KB)
+
+## Functions Implemented
+✓ normalize_phoneme(phoneme: str) -> str
+  - Strips tone diacritics (á → a)
+  - Strips stress marks (ˈ, ˌ)
+  - Preserves length markers (aː preserved)
+  - Maps IPA variants (g → ɡ)
+  - Unicode NFC normalization
+
+✓ normalize_segments(segments: list[str]) -> list[str]
+  - Normalizes each segment
+  - Filters empty results
+  - Returns clean phoneme list
+
+✓ segments_to_ipa_string(segments: list[str]) -> str
+  - Joins segments to IPA string
+  - No delimiters (standard IPA format)
+
+✓ normalize_ipa_string(ipa_string: str) -> str
+  - Convenience function for full string normalization
+  - Preserves whitespace structure
+
+## Design Decisions
+✓ Length markers PRESERVED (phonemically distinctive)
+  Decision documented in: .sisyphus/notepads/pangloss-mvp/decisions.md
+
+✓ Unicode NFC normalization applied (canonical composition)
+  Learnings documented in: .sisyphus/notepads/pangloss-mvp/learnings.md
+
+✓ IPA variant mapping: g→ɡ, :→ː (canonical forms)
+
+## Tests Passed
+✓ Tone stripping: á→a, ã→a, ǎ→a
+✓ Stress stripping: ˈa→a, ˌe→e
+✓ Length preservation: aː→aː, iː→iː
+✓ Variant mapping: g→ɡ (U+0261)
+✓ Segment pipeline: ['ˈw','ɑː','t','ə','ɹ'] → ['w','ɑː','t','ə','ɹ']
+✓ Empty filtering: ['á','b','ˈ','c'] → ['a','b','c']
+✓ Unicode NFC: 'ɑ\u0301' → 'ɑ' (combining diacritics)
+✓ Integration: Full import and workflow tests passed
+
+## Verification
+✓ Module imports successfully from pangloss.data.phonemes
+✓ Python syntax check passed
+✓ No crashes on edge cases (empty strings, Unicode variants, combined diacritics)
+✓ All functions work as specified in requirements
+
+## Documentation
+✓ Module docstring explains normalization strategy
+✓ Each function has docstring with examples
+✓ Inline comments explain Unicode handling
+✓ Decisions documented in notepad
+✓ Learnings documented in notepad
+
+Status: COMPLETE ✅
+Date: 2026-03-05

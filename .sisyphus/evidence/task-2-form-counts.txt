@@ -1,0 +1,48 @@
+ASJP Form Count Verification
+==================================================
+
+Minimum forms per concept: 7118
+Expected: >100
+Status: PASS
+
+Form counts by concept:
+  1   *I                9987 forms
+  2   *you              9995 forms
+  3   *we               9770 forms
+  11  *one             11831 forms
+  12  *two             11709 forms
+  18  *person          10052 forms
+  19  *fish            11018 forms
+  21  *dog             11717 forms
+  22  *louse            9415 forms
+  23  *tree            10910 forms
+  25  *leaf            10781 forms
+  28  *skin            10963 forms
+  30  *blood           11154 forms
+  31  *bone            10902 forms
+  34  *horn             7227 forms
+  39  *ear             11619 forms
+  40  *eye             11824 forms
+  41  *nose            11412 forms
+  43  *tooth           11526 forms
+  44  *tongue          11347 forms
+  47  *knee             9333 forms
+  48  *hand            10346 forms
+  51  *breasts         10600 forms
+  53  *liver            8692 forms
+  54  *drink           10643 forms
+  57  *see             11208 forms
+  58  *hear            10088 forms
+  61  *die             11046 forms
+  66  *come            11115 forms
+  72  *sun             10853 forms
+  74  *star            10643 forms
+  75  *water           11873 forms
+  77  *stone           11481 forms
+  82  *fire            11696 forms
+  85  *path            10619 forms
+  86  *mountain         9202 forms
+  92  *night           11417 forms
+  95  *full             7118 forms
+  96  *new              9233 forms
+  100 *name            10048 forms

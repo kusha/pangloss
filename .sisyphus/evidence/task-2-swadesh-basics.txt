@@ -1,0 +1,16 @@
+ASJP Swadesh Basics Verification
+==================================================
+
+Core Swadesh concepts (as specified in requirements):
+  water: *water (11873 forms)
+  fire:  *fire (11696 forms)
+  sun:   *sun (10853 forms)
+
+Status: PASS - All basic concepts present with >100 forms each
+
+Example data structure (sun concept, first form):
+  language_id:   A51_BAFIA_TUMI_TINGON
+  concept_id:    72
+  raw_value:     mwot
+  ipa_segments:  ['m', 'w', 'o', 't']
+  segments type: list

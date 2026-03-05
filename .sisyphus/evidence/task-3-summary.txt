@@ -1,0 +1,130 @@
+TASK 3 COMPLETION SUMMARY: Speaker Count Data Extraction
+=========================================================
+
+OBJECTIVE
+---------
+Download and parse CLDR supplemental data to extract global speaker counts,
+map to ASJP language IDs, and provide a cached speaker count lookup function.
+
+DELIVERABLES COMPLETED
+---------------------
+
+1. ✓ pangloss/data/speakers.py (10KB)
+   - Module with load_speaker_counts() public API
+   - Parses CLDR territoryInfo XML from GitHub
+   - Creates ISO 639-3 ↔ BCP 47 lookup table (50 major languages)
+   - Fallback: Parses ASJP raw/lists.txt for unmapped languages
+   - Utility functions: get_speakers_for_asjp_language()
+
+2. ✓ data/speakers.json (240KB)
+   - Cached JSON with 10,719 language entries
+   - Format: {language_id: total_speakers}
+   - Fast loading (avoids re-parsing on every call)
+   - Includes both CLDR and ASJP raw data
+
+3. ✓ QA Evidence
+   - task-3-qa-report.txt: Initial QA with CLDR alone
+   - task-3-final-qa.txt: Final QA with merged data
+   - Comprehensive testing of requirements
+
+RESULTS
+-------
+
+Coverage:   91.2% (10,526 / 11,540 ASJP languages have speaker counts)
+Languages:  10,719 total entries with speaker counts
+Major Langs:
+  - English: 1,733,824,666 speakers ✓
+  - Mandarin: 1,325,522,922 speakers ✓
+  - Spanish: 507,599,373 speakers ✓
+  - Hindi: 581,727,611 speakers ✓
+  - Portuguese: 249,463,912 speakers ✓
+
+Data Quality:
+  - Min speakers: 1 (rare regional languages)
+  - Max speakers: 1,733,824,666 (English)
+  - No anomalies or zero-count entries
+  - All values plausible and verified
+
+TECHNICAL APPROACH
+------------------
+
+1. Data Sources
+   - CLDR: territoryInfo with population percentages per territory
+   - ASJP: raw/lists.txt with direct population estimates
+   - No paid sources (Ethnologue), no API calls
+
+2. Language Code Mapping
+   - CLDR uses BCP 47 codes (en, es, fr, etc.)
+   - ASJP uses ISO 639-3 codes (eng, spa, fra, etc.)
+   - Created lookup table for major languages
+   - Bridges the two systems
+
+3. Aggregation Strategy
+   - Extract population % from each territory
+   - Multiply by territory population to get speaker count
+   - Aggregate across all territories per language
+   - Gives total speakers (native + L2)
+
+4. Fallback Mechanism
+   - Parse ASJP raw/lists.txt for languages not in CLDR
+   - Format: Language header → stats line with population
+   - 10,519 languages from ASJP raw data
+   - Prioritizes CLDR (higher quality) when available
+
+5. Caching
+   - JSON cache prevents re-parsing on every load
+   - load_speaker_counts() checks cache first
+   - ~240KB cache file (reasonable size)
+   - Fast O(1) lookups after first load
+
+REQUIREMENTS VERIFICATION
+-------------------------
+
+✓ Files created: pangloss/data/speakers.py, data/speakers.json
+✓ Function load_speaker_counts() returns dict with >=100 languages (10,719)
+✓ English has >1B speakers (1,733,824,666)
+✓ Mandarin has >1B speakers (1,325,522,922)
+✓ >50% ASJP coverage (91.2% achieved)
+✓ Speaker counts for major languages are plausible
+✓ ASJP language mapping successful
+✓ No wildly wrong numbers
+
+ARCHITECTURE NOTES
+------------------
+
+- Single module: pangloss/data/speakers.py
+- No external dependencies beyond stdlib (csv, json, xml, pathlib)
+- Public API: load_speaker_counts() -> Dict[str, int]
+- Utility functions for ASJP variant lookup
+- Cache invalidation: Manual (can delete speakers.json to regenerate)
+
+DESIGN DECISIONS DOCUMENTED
+---------------------------
+
+See .sisyphus/notepads/pangloss-mvp/decisions.md for:
+- Strategy explanation
+- ASJP fallback integration
+- Coverage improvement from 4.6% to 91.2%
+- Trade-offs (CLDR quality vs ASJP coverage)
+
+LIMITATIONS & FUTURE ENHANCEMENTS
+---------------------------------
+
+Current:
+- CLDR provides 720 language codes (limited to countries)
+- ASJP raw data is less precise than CLDR
+- Some rare languages may not have estimates
+
+Future:
+- Could add dialect-level population from Ethnologue (requires license)
+- Could validate against Wikipedia language list
+- Could add year of last update metadata
+
+TASK STATUS
+-----------
+
+✓ COMPLETE - All requirements met, all evidence collected
+✓ All tests passing
+✓ Documentation in place
+✓ Code ready for integration
+

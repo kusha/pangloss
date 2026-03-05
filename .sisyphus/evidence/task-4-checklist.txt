@@ -1,0 +1,87 @@
+=== Task 4 Checklist Verification ===
+
+## EXPECTED OUTCOME CHECKLIST
+
+[✓] Files created: `pangloss/data/phonemes.py`
+    - File exists: pangloss/data/phonemes.py (194 lines, 5.9KB)
+    
+[✓] Functionality:
+    [✓] Tone marks stripped: `normalize_phoneme('á')` → `'a'`
+        Evidence: .sisyphus/evidence/task-4-phoneme-normalization.txt
+        
+    [✓] Stress marks stripped: `normalize_phoneme('ˈa')` → `'a'`
+        Evidence: .sisyphus/evidence/task-4-phoneme-normalization.txt
+        
+    [✓] Length handling consistent (document choice made)
+        Decision: Length markers PRESERVED (aː ≠ a)
+        Documented: .sisyphus/notepads/pangloss-mvp/decisions.md
+        
+    [✓] Full pipeline works: `normalize_segments(['ˈw', 'ɑː', 't', 'ə', 'ɹ'])` → clean list, no empty strings
+        Result: ['w', 'ɑː', 't', 'ə', 'ɹ']
+        Evidence: .sisyphus/evidence/task-4-phoneme-normalization.txt
+        
+    [✓] No crashes on unusual Unicode
+        Tested: combining diacritics, empty strings, multiple stress marks
+        Evidence: All tests passed without exceptions
+
+[✓] Verification:
+    [✓] Test tone/stress stripping → correct output
+        Tests 1-2 in evidence file
+        
+    [✓] Test full segment pipeline → clean normalized list
+        Test 5-6 in evidence file
+
+## MUST DO CHECKLIST
+
+[✓] Strip tone and stress diacritics universally
+    Implementation: Lines 27-38 (tone list), Line 41 (stress list)
+    
+[✓] Apply Unicode NFC normalization to prevent invisible mismatches
+    Implementation: Lines 66, 76, 82 in normalize_phoneme()
+    
+[✓] Map IPA variants (`g` vs `ɡ`) to canonical forms
+    Implementation: Lines 45-48 (IPA_VARIANT_MAP)
+    
+[✓] Document which normalizations are applied and why (in docstrings)
+    Module docstring: Lines 1-17
+    Function docstrings: Lines 52-89, 92-115, 118-137, 140-167
+    
+[✓] Length marker strategy: DECIDE and document (keep /aː/ separate OR normalize to /a/)
+    Decision: PRESERVE length markers
+    Documented: .sisyphus/notepads/pangloss-mvp/decisions.md (lines 7-27)
+    
+[✓] Run QA scenarios and save evidence to `.sisyphus/evidence/task-4-*.txt`
+    Created: task-4-phoneme-normalization.txt
+    Created: task-4-summary.txt
+    Created: task-4-checklist.txt (this file)
+    
+[✓] Append decisions to `.sisyphus/notepads/pangloss-mvp/decisions.md` (length marker strategy)
+    Appended: Section "Phoneme Normalization: Length Marker Strategy"
+    
+[✓] Append learnings to `.sisyphus/notepads/pangloss-mvp/learnings.md` (Unicode edge cases)
+    Appended: Section "Phoneme Normalization: Unicode Handling"
+
+## MUST NOT DO CHECKLIST
+
+[✓] Do NOT implement fuzzy matching or phonetic distance (future work)
+    Confirmed: No fuzzy matching implemented
+    
+[✓] Do NOT add phonotactic validation
+    Confirmed: No phonotactic rules implemented
+    
+[✓] Do NOT use language-specific normalization rules (universal only)
+    Confirmed: All rules are language-agnostic
+    
+[✓] Do NOT double-normalize (apply each normalization once)
+    Confirmed: Single normalization pass per phoneme
+
+## FINAL STATUS
+
+All expected outcomes: ✅ COMPLETE
+All MUST DO items: ✅ COMPLETE
+All MUST NOT DO items: ✅ VERIFIED
+Evidence saved: ✅ 3 files created
+Documentation: ✅ Decisions and learnings appended
+
+Task 4: COMPLETE ✅
+Date: 2026-03-05

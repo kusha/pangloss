@@ -1,0 +1,32 @@
+=== QA Evidence: Phoneme Normalization Pipeline ===
+Task 4: Create phonemes.py module
+
+Test 1: Tone diacritics stripped
+  normalize_phoneme('á') = 'a' ✓
+  normalize_phoneme('ã') = 'a' ✓
+  normalize_phoneme('ǎ') = 'a' ✓
+
+Test 2: Stress marks stripped
+  normalize_phoneme('ˈa') = 'a' ✓
+  normalize_phoneme('ˌe') = 'e' ✓
+
+Test 3: Length markers PRESERVED (phonemic distinction)
+  normalize_phoneme('aː') = 'aː' ✓
+  normalize_phoneme('iː') = 'iː' ✓
+
+Test 4: IPA variant glyph mapping
+  normalize_phoneme('g') = 'ɡ' (mapped to U+0261) ✓
+
+Test 5: Full segment pipeline
+  Input:  ['ˈw', 'ɑː', 't', 'ə', 'ɹ']
+  Output: ['w', 'ɑː', 't', 'ə', 'ɹ']
+  IPA string: 'wɑːtəɹ' ✓
+
+Test 6: Empty string filtering
+  Input:  ['á', 'b', 'ˈ', 'c', 'ˌ']
+  Output: ['a', 'b', 'c'] (stress-only segments removed) ✓
+
+Test 7: Unicode NFC normalization
+  normalize_phoneme('ɑ́') = 'ɑ' (combining acute) ✓
+
+=== All Tests Passed ===

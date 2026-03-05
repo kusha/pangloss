@@ -1,0 +1,17 @@
+ASJP Edge Case Handling Verification
+==================================================
+
+1. Missing/empty Segments handling:
+   Parser successfully skips forms with empty Segments column
+   All loaded forms have non-empty ipa_segments lists
+
+2. Multiple forms per language-concept:
+   Concept *I: max 12 forms per language
+   Multiple forms per language-concept pair are kept (not deduplicated)
+
+3. Data validation:
+   Total concepts: 40 (expected 40)
+   Min forms per concept: 7118 (all >100)
+   No crashes on edge cases
+
+Status: PASS - Edge cases handled gracefully
