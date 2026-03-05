@@ -136,7 +136,8 @@ def detect_collisions(results: Dict[str, List[SyntheticWord]]) -> dict:
 
                 # Check exact form match
                 if word1.form.lower().strip() == word2.form.lower().strip():
-                    pair_key = tuple(sorted([word1.form, word2.form]))
+                    sorted_forms = sorted([word1.form, word2.form])
+                    pair_key = (sorted_forms[0], sorted_forms[1])
                     if pair_key not in seen_within:
                         seen_within.add(pair_key)
                         within_concept_collisions.append(
@@ -151,7 +152,8 @@ def detect_collisions(results: Dict[str, List[SyntheticWord]]) -> dict:
                     # Check IPA similarity
                     similarity = SequenceMatcher(None, word1.ipa, word2.ipa).ratio()
                     if similarity >= 0.85:
-                        pair_key = tuple(sorted([word1.form, word2.form]))
+                        sorted_forms = sorted([word1.form, word2.form])
+                        pair_key = (sorted_forms[0], sorted_forms[1])
                         if pair_key not in seen_within:
                             seen_within.add(pair_key)
                             within_concept_collisions.append(

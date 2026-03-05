@@ -252,7 +252,7 @@ def save_dictionary(dictionary: dict, path: str, format: str = "json") -> None:
         if not YAML_AVAILABLE:
             raise ValueError("YAML format requested but PyYAML not installed")
         with open(output_path, "w", encoding="utf-8") as f:
-            yaml.dump(dictionary, f, allow_unicode=True, sort_keys=False)
+            yaml.dump(dictionary, f, allow_unicode=True, sort_keys=False)  # type: ignore[name-defined]
     else:
         raise ValueError(f"Invalid format: {format}. Must be 'json' or 'yaml'")
 
