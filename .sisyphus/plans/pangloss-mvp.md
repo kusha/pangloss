@@ -981,7 +981,7 @@ Max Concurrent: 4 (Waves 1 & 2)
   - Message: `feat(algo): implement weighted set cover synonym selection`
   - Files: `pangloss/algo/selector.py`
 
-- [ ] 11. Dictionary Output Formatter
+- [x] 11. Dictionary Output Formatter
 
   **What to do**:
   - Create `pangloss/output/dictionary.py` module

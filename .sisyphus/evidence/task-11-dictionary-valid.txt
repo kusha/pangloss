@@ -1,0 +1,35 @@
+=== Task 11: Dictionary Output Formatter - Validation Summary ===
+
+Dictionary Structure:
+  - Concepts: 1
+  - Synonyms for 'water': 18
+  - Total coverage: 39.25%
+  - Total speakers: 211,791,989,245
+  - Language families covered: 64
+
+Top 3 Synonyms:
+  1. nini (/nini/)
+     - Covers: 276 languages
+     - Speakers: 95,244,466,835
+     - Coverage: 39.25%
+     - Pattern: Cluster /n-i-n-i/
+
+  2. nyinyi (/ɲiɲi/)
+     - Covers: 99 languages
+     - Speakers: 39,014,909,302
+     - Coverage: 16.08%
+     - Pattern: Cluster /ɲ-i-ɲ-i/
+
+  3. lili (/lili/)
+     - Covers: 40 languages
+     - Speakers: 22,295,274,306
+     - Coverage: 9.19%
+     - Pattern: Cluster /l-i-l-i/
+
+Summary Statistics:
+  - Total concepts: 1
+  - Avg coverage: 39.25%
+  - Unique languages: 1111
+  - Unique families: 64
+
+✓ All validations passed

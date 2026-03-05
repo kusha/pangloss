@@ -334,3 +334,60 @@ Sample entry: MatrixEntry(
 - Verified monotonicity, edge case handling, and coverage delta accuracy
 
 **Date**: 2026-03-05
+
+## Task 11: Dictionary Output Formatter (2026-03-05)
+
+**Module Structure**:
+- Created `pangloss/output/dictionary.py` with three main functions:
+  - `format_dictionary()`: Converts SyntheticWord results to structured dictionary
+  - `save_dictionary()`: Serializes to JSON or YAML with proper encoding
+  - `format_summary()`: Computes aggregate statistics across concepts
+
+**Language Family Extraction**:
+- Primary approach: Look up family from MatrixEntry objects using language_id
+- Fallback approach: Heuristic keyword matching in reasoning text
+- Matrix entries contain `language_family` field from ASJP metadata
+- Pass optional `matrix_entries` dict to enable family lookup
+- Water example: 64 unique families detected from 1,111 covered languages
+
+**Dictionary Structure**:
+- Top-level: `{"concepts": [...]}`
+- Per-concept: `concept`, `synonyms`, `total_coverage`, `total_speakers`, `language_families_covered`, `synonym_count`
+- Per-synonym: `form`, `ipa`, `covers` (sorted list), `speaker_count`, `coverage_pct`, `source_pattern`, `reasoning`
+- JSON format: indent=2, ensure_ascii=False for proper IPA rendering
+- YAML format: allow_unicode=True, sort_keys=False for readability
+
+**Source Pattern Generation**:
+- MVP implementation: phoneme-based cluster description
+- Format: "Cluster /phoneme1-phoneme2-.../"
+- Shows first 4 phonemes, adds "..." if longer
+- Example: "Cluster /n-i-n-i/" for word "nini"
+- Future enhancement: Could incorporate family info or etymological patterns
+
+**Summary Statistics**:
+- Aggregates: total_concepts, avg/min/max coverage_pct, avg/min/max synonym_count
+- Uniqueness counts: total_unique_languages, total_unique_families
+- Computes from formatted dictionary (not raw data)
+- Empty concept list: Returns all zeros (graceful degradation)
+
+**Implementation Decisions**:
+- Used Optional[Dict[str, List[Any]]] for matrix_entries (avoids circular import)
+- MatrixEntry type imported as Any to avoid tight coupling
+- PyYAML is optional dependency (raises ValueError if YAML requested but not installed)
+- Path.mkdir(parents=True, exist_ok=True) ensures output directory exists
+- Language IDs are sorted in "covers" list for deterministic output
+
+**Verification Results**:
+- Water concept: 18 synonyms selected at 90% threshold
+- Coverage: 39.25% (1,111 languages, 211B speakers)
+- Families: 64 unique families (Afro-Asiatic, Austronesian, Sino-Tibetan, etc.)
+- Top synonym: "nini" (/nini/) covering 276 languages (95.2B speakers)
+- Output files: JSON dictionary (1,329 lines), summary stats (11 lines), validation text
+
+**Integration Notes**:
+- format_dictionary() signature extended with optional matrix_entries parameter
+- Backward compatible: works without matrix_entries (fallback to reasoning heuristic)
+- Task 13 (CLI) will need to pass matrix_entries for full family detection
+- Output directory automatically created by save_dictionary()
+
+**Date**: 2026-03-05
