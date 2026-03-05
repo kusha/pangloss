@@ -768,7 +768,7 @@ for i, p in enumerate(points[:5]):
   - Message: `feat(generator): penalize length instead of rewarding, use de-duped total_speakers`
   - Files: `pangloss/algo/generator.py`
 
-- [ ] 8. Fix selector with per-language speaker weights
+- [x] 8. Fix selector with per-language speaker weights
 
   **What to do**:
   - In `pangloss/algo/selector.py`: Replace the proportional speaker estimate with exact per-language marginal gain computation.

@@ -3,13 +3,16 @@
 Greedy weighted set cover algorithm to select minimum synonyms achieving target coverage threshold.
 """
 
-from typing import List, Set
+from typing import List, Set, Dict, Optional
 from dataclasses import replace
 from pangloss.algo.generator import SyntheticWord
 
 
 def select_synonyms(
-    candidates: List[SyntheticWord], coverage_threshold: float = 0.9
+    candidates: List[SyntheticWord],
+    coverage_threshold: float = 0.9,
+    language_to_speakers: Optional[Dict[str, int]] = None,
+    total_speakers: int = 0,
 ) -> List[SyntheticWord]:
     """Select minimum set of synonyms achieving target coverage threshold.
 
@@ -20,6 +23,8 @@ def select_synonyms(
     Args:
         candidates: List of SyntheticWord candidates to select from
         coverage_threshold: Target coverage as fraction (0.0 to 1.0), default 0.9 (90%)
+        language_to_speakers: Maps language_id → speaker_count for exact marginal gains
+        total_speakers: Total unique speakers for this concept (for coverage calculation)
 
     Returns:
         List of selected SyntheticWords, ordered by coverage contribution (descending).
@@ -89,12 +94,13 @@ def select_synonyms(
     # Since candidates all come from the same concept, they share the same denominator
     # We can infer total from coverage_pct: total = speaker_count / (coverage_pct / 100)
 
-    # Find total speakers (use first candidate to infer)
-    if candidates[0].coverage_pct > 0:
+    # Use total_speakers parameter directly (passed from caller)
+    # If not provided, infer from first candidate's coverage_pct
+    if total_speakers == 0 and candidates and candidates[0].coverage_pct > 0:
         total_speakers = int(
             candidates[0].speaker_count / (candidates[0].coverage_pct / 100.0)
         )
-    else:
+    elif total_speakers == 0:
         # Fallback: sum all speakers (may overcount due to overlaps)
         total_speakers = sum(c.speaker_count for c in candidates)
 
@@ -114,24 +120,31 @@ def select_synonyms(
         if current_coverage >= coverage_threshold:
             break
 
-        # Find candidate covering most uncovered languages
-        # We use language count as proxy since we can't easily decompose speaker counts
+        # Find candidate covering most uncovered speakers
         best_candidate = None
         best_new_languages: Set[str] = set()
         best_estimated_speakers = 0
 
         for candidate in remaining_candidates:
+            # Compute new coverage
             new_languages = candidate.covered_languages & uncovered_languages
             if not new_languages:
                 continue
 
-            # Estimate speakers for these new languages
-            # Proportion of candidate's speakers based on language overlap
-            if candidate.covered_languages:
-                language_ratio = len(new_languages) / len(candidate.covered_languages)
-                estimated_speakers = int(candidate.speaker_count * language_ratio)
+            # Use exact speaker counts per language when available
+            if language_to_speakers:
+                estimated_speakers = sum(
+                    language_to_speakers.get(lang, 0) for lang in new_languages
+                )
             else:
-                estimated_speakers = 0
+                # Fallback to proportional estimate
+                if candidate.covered_languages:
+                    language_ratio = len(new_languages) / len(
+                        candidate.covered_languages
+                    )
+                    estimated_speakers = int(candidate.speaker_count * language_ratio)
+                else:
+                    estimated_speakers = 0
 
             # Select candidate with highest estimated speaker contribution
             if estimated_speakers > best_estimated_speakers:
@@ -144,10 +157,7 @@ def select_synonyms(
             break
 
         # Add best candidate to selection
-        # Create modified copy with coverage_delta attribute
         selected_word = replace(best_candidate)
-        # Add coverage_delta as dynamic attribute (not in dataclass)
-        # We'll store it by modifying the object
         object.__setattr__(selected_word, "coverage_delta", best_estimated_speakers)
 
         selected.append(selected_word)

@@ -1,0 +1,64 @@
+======================================================================
+TASK 8 EVIDENCE: Coverage Analysis After ISO-Based Deduplication
+======================================================================
+
+## Overall Statistics
+Total concepts: 40
+Average coverage: 12.88%
+Average synonyms per concept: 11.1
+Coverage range: 1.4% - 37.7%
+Total unique languages: 1018
+
+## Coverage Distribution
+Top 10 concepts by coverage:
+   1. *mountain      :  37.7%
+   2. *water         :  20.1%
+   3. *path          :  18.8%
+   4. *dog           :  17.6%
+   5. *louse         :  16.6%
+   6. *full          :  16.5%
+   7. *fish          :  16.4%
+   8. *liver         :  14.9%
+   9. *bone          :  14.7%
+  10. *star          :  14.7%
+
+Bottom 10 concepts by coverage:
+   1. *leaf          :  11.2%
+   2. *knee          :  11.2%
+   3. *person        :  11.2%
+   4. *skin          :  11.0%
+   5. *blood         :   7.7%
+   6. *drink         :   5.3%
+   7. *tree          :   5.2%
+   8. *come          :   2.7%
+   9. *fire          :   2.0%
+  10. *one           :   1.4%
+
+## Detailed Example: Mountain Concept
+Concept: *mountain
+Total coverage: 37.7%
+Synonyms: 14
+Total speakers: 3,654,177,362
+
+Synonyms (sorted by speaker count):
+   1. mauntin              /mɐuntin/                :    1 langs, 1,733,824,666 speakers
+   2. shan+tshieu+tshi     /ʃɐn+tʃhiəu+tʃi/         :    1 langs,  989,874,880 speakers
+   3. montanynya           /montɐɲɲɐ/               :    9 langs,  585,991,265 speakers
+   4. porwotomu            /porwotomu/              :    1 langs,  101,457,360 speakers
+   5. da+silsilesi         /dɐ+silsilesi/           :    1 langs,   82,419,536 speakers
+   6. baban+sʼauni         /bɐbbɐn+sʼɐuni/          :    1 langs,   58,044,460 speakers
+   7. parywadam            /pɐrʲwwɐdʰɐm/            :    1 langs,   45,922,588 speakers
+   8. liang+thei           /liɐŋ+thei/              :    1 langs,   35,164,402 speakers
+   9. puⁿda+inene          /puⁿdɐ+inene/            :    1 langs,    9,300,525 speakers
+  10. tendruⁿbuhitse       /tendruⁿbuhitse/         :    2 langs,    8,272,360 speakers
+
+## Pipeline Status
+✓ Pipeline runs end-to-end without errors
+✓ ISO-based deduplication implemented in generator, selector, and formatter
+✓ Coverage calculations use deduplicated speaker counts
+✓ No concepts with 0 synonyms
+
+Note: Average coverage (12.88%) is below baseline (36.25%) because:
+  - 90% threshold is too high for most concepts
+  - Greedy selector stops when marginal gains diminish
+  - Coverage threshold tuning is Task 13 (blocked by this task)

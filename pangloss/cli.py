@@ -11,7 +11,7 @@ from pangloss.algo.generator import generate_word
 from pangloss.algo.selector import select_synonyms
 from pangloss.data.asjp import load_asjp
 from pangloss.data.matrix import build_matrix
-from pangloss.data.speakers import load_speaker_counts
+from pangloss.data.speakers import load_speaker_counts, get_all_asjp_iso_mappings
 from pangloss.graph.trie import build_prefix_trie, build_suffix_trie
 from pangloss.output.dictionary import (
     format_dictionary,
@@ -128,6 +128,9 @@ def generate(data_dir, output_dir, coverage_threshold, concept, format_choice, v
         click.echo(f"Error building matrix: {str(e)}", err=True)
         sys.exit(1)
 
+    # Load ISO mappings for deduplication in selector
+    asjp_to_iso = get_all_asjp_iso_mappings()
+
     # Filter to single concept if specified
     if concept:
         # Try to find concept in matrix, handling '*' prefix normalization
@@ -175,12 +178,24 @@ def generate(data_dir, output_dir, coverage_threshold, concept, format_choice, v
 
             # Generate candidate words from convergence points
             candidates = [
-                generate_word(p, prefix_trie, suffix_trie, concept_entry.entries)
+                generate_word(
+                    p,
+                    prefix_trie,
+                    suffix_trie,
+                    concept_entry.entries,
+                    total_speakers=concept_entry.total_speakers,
+                    max_word_length=8,
+                )
                 for p in points
             ]
 
             # Select synonyms based on coverage threshold
-            selected = select_synonyms(candidates, coverage_threshold)
+            selected = select_synonyms(
+                candidates,
+                coverage_threshold,
+                language_to_speakers=concept_entry.language_to_speakers,
+                total_speakers=concept_entry.total_speakers,
+            )
 
             # Export graph JSON
             graph_path = graphs_path / f"{concept_name.lstrip('*')}.json"
@@ -220,8 +235,14 @@ def generate(data_dir, output_dir, coverage_threshold, concept, format_choice, v
     try:
         # Build matrix_entries for format_dictionary
         matrix_entries = {c: matrix[c].entries for c in results}
+        concept_totals = {c: matrix[c].total_unique_speakers for c in results}
 
-        dictionary = format_dictionary(results, matrix_entries=matrix_entries)
+        dictionary = format_dictionary(
+            results,
+            matrix_entries=matrix_entries,
+            concept_totals=concept_totals,
+            asjp_to_iso=asjp_to_iso,
+        )
         dictionary_path = str(output_path / f"dictionary.{format_choice}")
         save_dictionary(dictionary, dictionary_path, format=format_choice)
 

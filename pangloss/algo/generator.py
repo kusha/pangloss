@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Set, Any, Optional
+from typing import List, Set, Any, Optional, Dict
 import networkx as nx
 from pangloss.algo.convergence import ConvergencePoint
 

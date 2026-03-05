@@ -22,12 +22,20 @@ from pangloss.algo.generator import SyntheticWord
 def format_dictionary(
     results: Dict[str, List[SyntheticWord]],
     matrix_entries: Optional[Dict[str, List[Any]]] = None,
+    concept_totals: Optional[Dict[str, int]] = None,
+    asjp_to_iso: Optional[Dict[str, str]] = None,
 ) -> dict:
     """
     Format pipeline results into structured dictionary.
 
     Args:
         results: Map of concept_name → list of selected SyntheticWords
+        matrix_entries: Map of concept_name → list of MatrixEntry objects (for speaker counts)
+        concept_totals: Map of concept_name → total_unique_speakers (for coverage calculation)
+        asjp_to_iso: Map of ASJP language_id → ISO 639-3 code (for deduplication)
+
+    Returns:
+        Dictionary with concepts list and metadata
         matrix_entries: Optional map of concept_name → list of MatrixEntry objects
             Used to extract language family information for covered languages
 
@@ -82,17 +90,33 @@ def format_dictionary(
             for entry in matrix_entries[concept_name]:
                 lang_speaker_counts[entry.language_id] = entry.speaker_count
 
+        # Deduplicate speaker counts by ISO code when summing
         total_speakers = 0
-        for lang_id in all_languages:
-            if lang_id in lang_speaker_counts:
-                total_speakers += lang_speaker_counts[lang_id]
+        if asjp_to_iso:
+            iso_speakers_seen = {}
+            for lang_id in all_languages:
+                if lang_id in lang_speaker_counts:
+                    iso = asjp_to_iso.get(lang_id, lang_id)
+                    if iso not in iso_speakers_seen:
+                        iso_speakers_seen[iso] = lang_speaker_counts[lang_id]
+            total_speakers = sum(iso_speakers_seen.values())
+        else:
+            for lang_id in all_languages:
+                if lang_id in lang_speaker_counts:
+                    total_speakers += lang_speaker_counts[lang_id]
 
         language_families = _extract_families_from_synonyms(
             synonyms, concept_name, matrix_entries
         )
 
         concept_total_speakers = (
-            sum(lang_speaker_counts.values()) if lang_speaker_counts else total_speakers
+            concept_totals.get(concept_name, sum(lang_speaker_counts.values()))
+            if concept_totals
+            else (
+                sum(lang_speaker_counts.values())
+                if lang_speaker_counts
+                else total_speakers
+            )
         )
         total_coverage = (
             (total_speakers / concept_total_speakers * 100)

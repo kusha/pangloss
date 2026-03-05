@@ -189,18 +189,22 @@ def build_matrix(
             entry.language_family for entry in entries if entry.language_family
         )
 
-        # Build language_to_speakers mapping
+        # Build language_to_speakers mapping (per language_id, not deduplicated)
         language_to_speakers = {
             entry.language_id: entry.speaker_count for entry in entries
         }
 
-        # Build ISO-canonical de-duplicated speaker count
+        # Build ISO-canonical de-duplicated speaker count for reporting
         iso_speakers_seen = {}
         for entry in entries:
             iso_code = asjp_to_iso.get(entry.language_id)
             if iso_code and iso_code not in iso_speakers_seen:
                 iso_speakers_seen[iso_code] = entry.speaker_count
-            elif not iso_code and entry.speaker_count > 0:
+            elif (
+                not iso_code
+                and entry.speaker_count > 0
+                and entry.language_id not in iso_speakers_seen
+            ):
                 iso_speakers_seen[entry.language_id] = entry.speaker_count
         total_unique_speakers = sum(iso_speakers_seen.values())
 
