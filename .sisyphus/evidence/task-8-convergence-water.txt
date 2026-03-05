@@ -1,0 +1,62 @@
+Top 15 distinct convergence points for 'water':
+
+1. Prefix: /ʃ-u/ + Suffix: /e-i/
+   Languages: 71, Speakers: 62,890,246,140, Score: 251,560,984,560.0
+   Sample langs: ['MANDARIN_YULIN_DINGBIAN', 'MANDARIN_DUNHUANG', 'JIN_BAYANNAOER_LINHE', 'MANDARIN_ANQING', 'MANDARIN_XINGTAI_PINGXIANG']
+
+2. Prefix: /s-u/ + Suffix: /i/
+   Languages: 159, Speakers: 80,402,967,046, Score: 241,208,901,138.0
+   Sample langs: ['PINGHUA_NANNING_TINGZI', 'MANDARIN_CANGZHOU_XIANXIAN', 'MANDARIN_EMEISHAN', 'XIANG_YONGZHOU_HUAQIAO', 'HAKKA_YULIN_GAOFENG']
+
+3. Prefix: /ʃ-i/ + Suffix: /i/
+   Languages: 83, Speakers: 9,062,182,900, Score: 27,186,548,700.0
+   Sample langs: ['HUI_XUANCHENG_JIXI_1', 'XIANG_LOUDI_SHUANGFENG', 'JIANCHUAN_BAI_2', 'HUI_HUANGSHAN_QIMEN', 'XIANG_CHANGSHA_KAIFU']
+
+4. Prefix: /ʃ/ + Suffix: /u-i/
+   Languages: 35, Speakers: 7,362,828,722, Score: 22,088,486,166.0
+   Sample langs: ['HAKKA_YULIN_BOBAI_2', 'HAKKA_GANZHOU_YUDU_2', 'PINGHUA_GUILIN_WUTONG', 'HAKKA_GANZHOU_YUDU_1', 'YUE_WUZHOU_XINXU']
+
+5. Prefix: /f-e/ + Suffix: /i/
+   Languages: 8, Speakers: 5,939,270,060, Score: 17,817,810,180.0
+   Sample langs: ['MEKEO', 'MANDARIN_LANZHOU', 'MANDARIN_SHANGQIU_1', 'MANDARIN_SHANGQIU_2', 'MANDARIN_PUYANG_FANXIAN']
+
+6. Prefix: /s-e/ + Suffix: /i/
+   Languages: 12, Speakers: 4,540,059,162, Score: 13,620,177,486.0
+   Sample langs: ['MANDARIN_LINGBAO', 'MANDARIN_XINYANG', 'XIANG_SHAOYANG_CHENGBU', 'HAKKA_GANZHOU_GANXIAN', 'MANDARIN_QIANDONGNAN_LIPING_1']
+
+7. Prefix: /ʃ-e/ + Suffix: /i/
+   Languages: 7, Speakers: 3,590,289,840, Score: 10,770,869,520.0
+   Sample langs: ['YUE_GUANGZHOU_1', 'YUE_YINGDE', 'MANDARIN_HUANGGANG_HUANGZHOU', 'MANDARIN_XIAOGAN_XIAONAN', 'YUE_GUANGZHOU_LIWAN']
+
+8. Prefix: /ʃ/ + Suffix: /e/
+   Languages: 15, Speakers: 5,137,663,302, Score: 10,275,326,604.0
+   Sample langs: ['MANDARIN_SUQIAN_SIHONG', 'PINGHUA_NANNING_WANGLING_1', 'HUI_JIANDE', 'MANDARIN_XUZHOU', 'PINGHUA_GUILIN_QINGLONG']
+
+9. Prefix: /p-ɐ/ + Suffix: /n-i/
+   Languages: 138, Speakers: 2,458,622,979, Score: 9,834,491,916.0
+   Sample langs: ['HAJONG', 'LOVARA_ROMANI', 'NAGA_PIDGIN', 'CHAKMA_UnnamedInSource', 'PUNJABI_MAJHI']
+
+10. Prefix: /w/ + Suffix: /ɐ-t-ə-r/
+   Languages: 5, Speakers: 1,769,072,039, Score: 8,845,360,195.0
+   Sample langs: ['DUTCH_2', 'ENGLISH', 'TWENTS', 'SALLANDS', 'SCOTS']
+
+11. Prefix: /ʃ-u-ə/ + Suffix: /i/
+   Languages: 3, Speakers: 2,027,749,760, Score: 8,110,999,040.0
+   Sample langs: ['JIN_LINZHOU_1', 'MANDARIN_HANDAN_DAMING', 'MANDARIN_LAIBIN_XIANGZHOU']
+
+12. Prefix: /s-a/ + Suffix: /i/
+   Languages: 18, Speakers: 2,672,991,502, Score: 8,018,974,506.0
+   Sample langs: ['YUE_FOSHAN_XINAN', 'YUE_AOMEN_2', 'YUE_SHAOGUAN', 'YUE_GUANGZHOU_CONGHUA', 'CANTONESE']
+
+13. Prefix: /ʃ-u-ɐ/ + Suffix: /i/
+   Languages: 2, Speakers: 1,979,749,760, Score: 7,918,999,040.0
+   Sample langs: ['MANDARIN_LAIBIN_WUXUAN', 'MANDARIN_NANNING_WUMING_2']
+
+14. Prefix: /w-o/ + Suffix: /t-ə/
+   Languages: 1, Speakers: 1,733,824,666, Score: 6,935,298,664.0
+   Sample langs: ['ENGLISH_2']
+
+15. Prefix: /s/ + Suffix: /u-e/
+   Languages: 2, Speakers: 1,979,749,760, Score: 5,939,249,280.0
+   Sample langs: ['MANDARIN_DALIAN_XINGSHU', 'MANDARIN_DALIAN_2']
+

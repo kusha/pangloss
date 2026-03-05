@@ -727,7 +727,7 @@ Max Concurrent: 4 (Waves 1 & 2)
   - Message: `feat(graph): implement suffix trie builder (reversed phoneme insertion)`
   - Files: `pangloss/graph/trie.py` (extended) or `pangloss/graph/suffix_trie.py`
 
-- [ ] 8. Convergence Point Detector
+- [x] 8. Convergence Point Detector
 
   **What to do**:
   - Create `pangloss/algo/convergence.py` module

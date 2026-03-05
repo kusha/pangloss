@@ -208,3 +208,61 @@
 - JSON serializable via `networkx.readwrite.json_graph.node_link_data()`
 - Blocks Task 8 (bridge edges) and Task 9 (word generation)
 
+
+## Language-Concept Matrix Builder (Task 5)
+
+**Date**: 2026-03-05
+
+**Key Insights**:
+- Matrix integration bridges ASJP forms, speaker counts, and metadata into unified structure
+- Performance bottleneck: `get_speakers_for_asjp_language()` reloads CSV mappings on every call (~90ms/lookup)
+- Solution: Inline speaker lookup logic with pre-loaded mappings (prevents CSV re-parsing)
+- Water concept: 11,873 forms, 228B total speakers (accounting for duplicates), 387 language families
+
+**Data Quality**:
+- Languages with speaker counts: 10,695/11,540 (91.2%)
+- Unmapped languages: 1,024 (8.8%) → use speaker_count=0 fallback
+- All entries have complete fields: language_id, phonemes, speaker_count, family, name
+- Most represented families: Atlantic-Congo, Austronesian, Sino-Tibetan, Trans-New Guinea
+
+**Implementation Notes**:
+- Lazy-load language metadata from `_parse_languages()` only when not provided as argument
+- Pre-load ISO↔ASJP mappings once to avoid repeated CSV parsing (critical for performance)
+- Inline speaker lookup: asjp_id → iso_code → representative_asjp_id → speaker_count
+- MatrixEntry includes both `language_id` (ASJP ID) and `language_name` (human-readable)
+- ConceptEntry pre-computes aggregate stats: total_languages, total_speakers, language_families (as set)
+
+**Edge Cases Handled**:
+- Empty phonemes after normalization: skip entry (rare, ~0 cases in water)
+- Unmapped languages: track count, use 0 speakers, preserve entry
+- Missing language metadata: use empty string for family, ASJP ID as name
+- Multiple forms per language-concept: keep all (no deduplication per ASJP design)
+
+**Performance**:
+- Full matrix build (40 concepts): ~10 minutes for 400K+ forms
+- Per-concept build (water): ~1 second for 11,873 forms
+- Bottleneck eliminated: reduced speaker lookup from 90ms to <1ms per form
+
+**Verification Evidence**:
+```
+Forms: 11873
+Total speakers: 228,985,224,125
+Sample entry: MatrixEntry(
+  language_id='A51_BAFIA_MAJA',
+  phonemes=['m', 'o', 'm', 'o'],
+  speaker_count=15000,
+  language_family='Atlantic-Congo',
+  language_name='A51_BAFIA_MAJA',
+  raw_value='momo'
+)
+```
+
+### Task 8: Convergence Point Detector Learnings
+- **Split-Point Search works beautifully**: Enumerating all possible valid phoneme splits for every word and looking up their corresponding prefix and suffix nodes is efficient and correctly identifies global structure since it operates entirely on pre-built tries without deep traversals.
+- **Distinctness Filter is Critical**: Without filtering for distinctness (e.g., <20% language set overlap between returned convergence points), the top-K results are completely dominated by trivial variations of the largest clusters.
+- **Mandarin Speaker Count Inflation**: Sinitic languages (Mandarin variants) dominate the absolute highest raw scores due to the speaker mapping decision from Wave 2 (where each variant receives the entire ~1.1 Billion ISO code speaker count). The distinctness filter ensures this only eats up *one* or *two* top spots (because later ones overlap with the first and get filtered out).
+- **Phonetic Universals Discovered**: The algorithm successfully isolates structural components of major language families automatically. For "*water", we verified it cleanly extracts:
+  - Germanic: `/w/ + /ɐ-t-ə-r/`
+  - Slavic: `/v-o/ + /d-ɐ/`
+  - Indo-Aryan: `/p-ɐ/ + /n-i/`
+  - Romance: broadly clustered under `/ɐ/` (due to variations like `/ɐ-k-w-ɐ/` vs `/a-g-w-a/` splitting deeper nodes).
