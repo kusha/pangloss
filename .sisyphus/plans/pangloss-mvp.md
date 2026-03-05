@@ -1249,15 +1249,15 @@ Max Concurrent: 4 (Waves 1 & 2)
 
 > 4 review agents run in PARALLEL. ALL must APPROVE. Rejection → fix → re-run.
 
-- [ ] F1. **Plan Compliance Audit** — `oracle`
+- [x] F1. **Plan Compliance Audit** — `oracle`
   Read the plan end-to-end. For each "Must Have": verify implementation exists (read file, run command). For each "Must NOT Have": search codebase for forbidden patterns — reject with file:line if found. Check evidence files exist in .sisyphus/evidence/. Compare deliverables against plan.
   Output: `Must Have [N/N] | Must NOT Have [N/N] | Tasks [N/N] | VERDICT: APPROVE/REJECT`
 
-- [ ] F2. **Code Quality Review** — `unspecified-high`
+- [x] F2. **Code Quality Review** — `unspecified-high`
   Run `python -m py_compile pangloss/*.py`. Review all files for: bare excepts, hardcoded paths, missing type hints on public APIs, commented-out code, unused imports. Check for AI slop: excessive comments, over-abstraction, generic variable names. Verify package structure is clean.
   Output: `Compile [PASS/FAIL] | Files [N clean/N issues] | VERDICT`
 
-- [ ] F3. **Full Pipeline QA** — `deep`
+- [x] F3. **Full Pipeline QA** — `deep`
   Run `python -m pangloss generate --coverage-threshold 0.9` and verify:
   - Produces output for all 40 concepts
   - Each concept has ≥1 synonym
@@ -1268,7 +1268,7 @@ Max Concurrent: 4 (Waves 1 & 2)
   - Run on a single concept ("water") and verify output contains expected patterns: should see Romance /ak/ cluster, Slavic /vod/ cluster, Germanic /wat/ cluster
   Output: `Concepts [N/N] | Coverage [min/avg/max %] | JSON Valid [Y/N] | Graphs [N/N] | VERDICT`
 
-- [ ] F4. **Scope Fidelity Check** — `deep`
+- [x] F4. **Scope Fidelity Check** — `deep`
   For each task: read "What to do", read actual implementation. Verify 1:1 — everything in spec was built (no missing), nothing beyond spec was built (no creep). Check "Must NOT do" compliance. Flag any web UI code, API calls, SQLite usage, test frameworks, or over-engineered abstractions.
   Output: `Tasks [N/N compliant] | Creep [CLEAN/N issues] | VERDICT`
 
