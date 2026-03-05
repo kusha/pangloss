@@ -1,0 +1,7 @@
+=== QA Scenario 2: Single-Synonym Edge Case ===
+
+Found 0 concepts with single synonym
+
+
+=== VERIFICATION ===
+No single-synonym concepts found in test data

@@ -1,0 +1,18 @@
+QA Test 4: Invalid Concept Error Message
+=========================================
+
+Command: python -m pangloss generate --concept "INVALIDCONCEPT123"
+
+Result: PASSED
+- Error message clearly displayed
+- Available concepts shown WITHOUT * prefix (user-friendly)
+
+Error Output:
+Error: Concept 'INVALIDCONCEPT123' not found in ASJP data
+Available concepts: I, blood, bone, breasts, come, die, dog, drink, ear, eye, fire, fish, full, hand, hear, horn, knee, leaf, liver, louse, mountain, name, new, night, nose, one, path, person, see, skin, star, stone, sun, tongue, tooth, tree, two, water, we, you
+
+Key Success Criteria:
+✓ Clear error message when invalid concept provided
+✓ Available concepts listed without * prefix
+✓ Users can see valid concept names they can query
+✓ Error handling prevents confusion about naming convention

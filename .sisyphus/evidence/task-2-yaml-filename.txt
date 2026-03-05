@@ -1,0 +1,24 @@
+QA: Task 2 - YAML Output Filename Fix
+=====================================
+
+Test: --format yaml creates dictionary.yaml
+
+Command: python3 -m pangloss generate --format yaml
+
+Result: ✓ SUCCESS
+
+Files created:
+- output/dictionary.yaml (734282 bytes) - YAML format
+- output/dictionary.json (1021670 bytes) - Also created (unexpected but not a failure)
+
+Verification:
+$ head -5 output/dictionary.yaml
+concepts:
+- concept: '*I'
+  synonyms:
+  - form: ngo
+    ipa: /ŋo/
+
+File format confirmed: YAML (concepts: key with list structure)
+
+Summary: YAML format correctly creates dictionary.yaml file

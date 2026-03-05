@@ -74,16 +74,31 @@ def format_dictionary(
             )
 
         all_languages = set()
-        total_speakers = 0
         for word in synonyms:
             all_languages.update(word.covered_languages)
-            total_speakers += word.speaker_count
+
+        lang_speaker_counts = {}
+        if matrix_entries and concept_name in matrix_entries:
+            for entry in matrix_entries[concept_name]:
+                lang_speaker_counts[entry.language_id] = entry.speaker_count
+
+        total_speakers = 0
+        for lang_id in all_languages:
+            if lang_id in lang_speaker_counts:
+                total_speakers += lang_speaker_counts[lang_id]
 
         language_families = _extract_families_from_synonyms(
             synonyms, concept_name, matrix_entries
         )
 
-        total_coverage = max((word.coverage_pct for word in synonyms), default=0.0)
+        concept_total_speakers = (
+            sum(lang_speaker_counts.values()) if lang_speaker_counts else total_speakers
+        )
+        total_coverage = (
+            (total_speakers / concept_total_speakers * 100)
+            if concept_total_speakers > 0
+            else 0.0
+        )
 
         concepts.append(
             {

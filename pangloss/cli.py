@@ -130,13 +130,28 @@ def generate(data_dir, output_dir, coverage_threshold, concept, format_choice, v
 
     # Filter to single concept if specified
     if concept:
-        if concept not in matrix:
+        # Try to find concept in matrix, handling '*' prefix normalization
+        # Matrix keys have '*' prefix (e.g., '*water'), user may provide 'water' or '*water'
+        concept_key = None
+        if concept in matrix:
+            concept_key = concept
+        elif f"*{concept}" in matrix:
+            concept_key = f"*{concept}"
+        else:
+            # Try case-insensitive search for better UX
+            concept_lower = concept.lstrip("*").lower()
+            for key in matrix.keys():
+                if key.lstrip("*").lower() == concept_lower:
+                    concept_key = key
+                    break
+
+        if concept_key is None:
             click.echo(f"Error: Concept '{concept}' not found in ASJP data", err=True)
-            click.echo(
-                f"Available concepts: {', '.join(sorted(matrix.keys()))}", err=True
-            )
+            # Show available concepts without '*' prefix for clarity
+            available = sorted([k.lstrip("*") for k in matrix.keys()])
+            click.echo(f"Available concepts: {', '.join(available)}", err=True)
             sys.exit(1)
-        matrix = {concept: matrix[concept]}
+        matrix = {concept_key: matrix[concept_key]}
 
     # Step 4: Process each concept
     if verbose:
@@ -168,7 +183,7 @@ def generate(data_dir, output_dir, coverage_threshold, concept, format_choice, v
             selected = select_synonyms(candidates, coverage_threshold)
 
             # Export graph JSON
-            graph_path = graphs_path / f"{concept_name}.json"
+            graph_path = graphs_path / f"{concept_name.lstrip('*')}.json"
             export_bowtie_graph(
                 prefix_trie, suffix_trie, points, concept_name, graph_path
             )
@@ -207,7 +222,7 @@ def generate(data_dir, output_dir, coverage_threshold, concept, format_choice, v
         matrix_entries = {c: matrix[c].entries for c in results}
 
         dictionary = format_dictionary(results, matrix_entries=matrix_entries)
-        dictionary_path = str(output_path / "dictionary.json")
+        dictionary_path = str(output_path / f"dictionary.{format_choice}")
         save_dictionary(dictionary, dictionary_path, format=format_choice)
 
         if verbose:

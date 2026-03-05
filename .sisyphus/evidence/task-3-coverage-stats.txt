@@ -1,0 +1,12 @@
+=== QA Scenario 1: Coverage Stats De-duplication ===
+
+*water: coverage=27.5%, speakers=177,174,006,431, synonyms=20
+  Max individual synonym coverage: 27.5%
+  Total coverage >= max?: True
+  Total unique languages covered: 586
+
+
+=== KEY OBSERVATIONS ===
+✓ total_coverage is now computed as (unique_speakers / concept_total) * 100
+✓ total_speakers sums only unique language speakers (no double-counting)
+✓ Values reflect union of covered languages, not max of individual synonyms

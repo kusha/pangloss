@@ -1,0 +1,28 @@
+QA Test 3: All 40 Concepts - Graph Filenames
+==============================================
+
+Command: python -m pangloss generate --verbose
+
+Result: PASSED
+- All 40 concepts processed successfully
+- Output reports: ✓ 40 graph files saved to output/graphs/
+
+Graph Filename Verification:
+✓ NEW graph files (timestamp 14:44) have NO * prefix
+  - Example: water.json (not *water.json)
+  - Example: I.json (not *I.json)
+  - Example: blood.json (not *blood.json)
+  - All 40 newest files follow this pattern
+
+Sample of newest files (all without * prefix):
+- name.json (Mar  5 14:44)
+- new.json (Mar  5 14:44)
+- full.json (Mar  5 14:44)
+- night.json (Mar  5 14:44)
+- mountain.json (Mar  5 14:44)
+- water.json (Mar  5 14:44)
+
+Key Success Criteria:
+✓ Graph filenames do NOT include * prefix
+✓ Files are correctly named based on concept_name.lstrip('*')
+✓ All 40 concepts generated properly

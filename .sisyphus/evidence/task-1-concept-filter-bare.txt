@@ -1,0 +1,15 @@
+QA Test 1: --concept water (without * prefix)
+==============================================
+
+Command: python -m pangloss generate --concept water --verbose
+
+Result: PASSED
+- Lookup with "water" (no * prefix) works correctly
+- Finds and processes concept successfully
+- Output shows: ✓ *water: 20 synonyms, 27.5% coverage
+- Graph file created: water.json (verified)
+
+Key Success Criteria:
+✓ User can pass bare concept name without * prefix
+✓ CLI internally matches to *water in matrix
+✓ Processing completes successfully
