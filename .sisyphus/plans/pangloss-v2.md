@@ -423,7 +423,7 @@ for c in d['concepts']:
   - Message: `fix(dictionary): compute coverage as union of languages, not sum/max`
   - Files: `pangloss/output/dictionary.py`
 
-- [ ] 4. Canonicalize speaker lookup to ISO in matrix.py
+- [x] 4. Canonicalize speaker lookup to ISO in matrix.py
 
   **What to do**:
   - In `pangloss/data/matrix.py` lines 115-143: The current lookup chain is: `asjp_id → iso_code (via asjp_to_iso) → representative_asjp_id (via iso_to_asjp_representative) → speaker_counts[representative_asjp_id]`. This fails when `representative_asjp_id` doesn't exist as a key in `speaker_counts`.
@@ -506,7 +506,7 @@ if water:
   - Message: `fix(matrix): canonicalize speaker lookup to ISO keys`
   - Files: `pangloss/data/matrix.py`
 
-- [ ] 5. De-duplicate total_speakers in matrix.py + pass language_to_speakers
+- [x] 5. De-duplicate total_speakers in matrix.py + pass language_to_speakers
 
   **What to do**:
   - In `pangloss/data/matrix.py` lines 164-165: `total_speakers = sum(entry.speaker_count for entry in entries)` inflates the count because multiple ASJP variants of the same language (e.g., `MANDARIN_BEIJING`, `MANDARIN_SHANGHAI`) share the same ISO code and thus the same speaker count.
