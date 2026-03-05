@@ -509,7 +509,7 @@ Max Concurrent: 4 (Waves 1 & 2)
   - Message: `feat(data): add IPA phoneme normalization utilities`
   - Files: `pangloss/data/phonemes.py`
 
-- [ ] 5. Language-Concept Matrix Builder
+- [x] 5. Language-Concept Matrix Builder
 
   **What to do**:
   - Create `pangloss/data/matrix.py` module
@@ -571,7 +571,7 @@ Max Concurrent: 4 (Waves 1 & 2)
   - Message: `feat(data): build speaker-weighted language-concept matrix`
   - Files: `pangloss/data/matrix.py`
 
-- [ ] 6. Prefix Trie Builder
+- [x] 6. Prefix Trie Builder
 
   **What to do**:
   - Create `pangloss/graph/trie.py` module
@@ -668,7 +668,7 @@ Max Concurrent: 4 (Waves 1 & 2)
   - Message: `feat(graph): implement phoneme-level prefix trie builder`
   - Files: `pangloss/graph/trie.py`
 
-- [ ] 7. Suffix Trie Builder
+- [x] 7. Suffix Trie Builder
 
   **What to do**:
   - Extend `pangloss/graph/trie.py` (or create `pangloss/graph/suffix_trie.py`)
