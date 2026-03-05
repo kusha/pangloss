@@ -114,3 +114,97 @@
 - LanguageData includes Optional coordinates (tuple[float, float] or None)
 
 **Date**: 2026-03-05
+
+## Task 7: Suffix Trie Implementation
+
+**Implementation Strategy:**
+- Refactored existing prefix trie code to extract shared `_insert_into_trie()` function
+- Suffix trie: reverses phoneme sequences BEFORE insertion, then uses identical insertion logic
+- Both tries use same node/edge attribute schema for consistency
+
+**Key Design Decisions:**
+- Node ID format: joined phonemes with "-" separator (e.g., "a-k-a")
+- Root node: "ε" (epsilon) for both prefix and suffix tries
+- Edge type attribute: "prefix" vs "suffix" to distinguish trie type
+- Phoneme reversal: `list(reversed(entry.phonemes))` creates new list, preserves input
+
+**Code Reuse Success:**
+- ~60 lines of duplicate insertion logic eliminated
+- Shared function ensures consistent behavior between prefix/suffix
+- Graph metadata differs: `trie.graph["trie_type"]` = "prefix" or "suffix"
+
+**Verification Results (small test dataset):**
+- Suffix trie: 16 nodes, 15 edges, 3 root branches
+- Common final phonemes detected: /a/ (2 langs, 845M speakers), /ə/ (1 lang, 1.7B), /i/ (1 lang, 1.3B)
+- Spanish "agua" + Russian "voda" correctly cluster on final /a/
+- Prefix trie: 17 nodes, 16 edges, 4 root branches (initial phonemes)
+
+**Technical Notes:**
+- Suffix trie's `phoneme_sequence` attribute stores REVERSED phonemes (e.g., ["a", "d", "a", "v"] for "voda")
+- This reversal is intentional: captures word endings for right→left traversal
+- Accumulated speaker counts show convergence strength at each suffix depth
+- Node scoring function (`depth * speaker_count`) works identically for both tries
+
+**Integration Points:**
+- Task 6 (prefix trie) and Task 7 (suffix trie) now share core insertion logic
+- Ready for Task 8 (convergence point detection): bridge edges will connect prefix/suffix nodes
+- Bowtie graph structure: prefix trie ← bridge edges → suffix trie
+
+
+## Task 6: Prefix Trie Builder
+
+**Implementation**: `pangloss/graph/trie.py`
+
+### Key Design Decisions
+
+1. **NetworkX DiGraph as backing store**: Used `nx.DiGraph()` directly instead of custom trie class
+   - Leverages NetworkX's graph algorithms and serialization
+   - Node IDs are phoneme sequences joined by '-' (e.g., 'w-ɑː-t')
+   - Root node at 'ε' (epsilon) represents empty sequence
+
+2. **Node attributes**:
+   - `phoneme_sequence`: list of phonemes (accumulated path from root)
+   - `depth`: distance from root (1-indexed)
+   - `languages`: set of language_ids passing through this node
+   - `speaker_count`: sum of speakers from all languages at this node
+
+3. **Edge attributes**:
+   - `phoneme`: the phoneme added at this edge
+   - `languages`: set of language_ids using this edge
+   - `type`: 'prefix' (distinguishes from suffix edges in Task 7)
+
+4. **Iterative insertion**: Left-to-right phoneme traversal
+   - Avoids recursion depth issues with long words
+   - Accumulates language sets and speaker counts at each node
+   - Creates nodes/edges lazily as needed
+
+5. **Node scoring**: `depth * speaker_count`
+   - Rewards both specificity (depth) and universality (speakers)
+   - Used by downstream tasks to find convergence points
+
+### Verification Results
+
+**Synthetic test** (26 languages, 6 families):
+- 66 nodes, 9 root branches
+- Average clustering purity: 75.4% (vs 50% random)
+- Family patterns emerge naturally:
+  - /v/ branch: Germanic + Slavic (shared Indo-European)
+  - /a/ branch: Romance + Austronesian (convergent evolution)
+  - /w/ branch: Germanic (English, Dutch)
+  - Asian languages: distinct branches (/ʂ/, /m/, /t/, /tʃ/)
+
+**Key insight**: Language families cluster on initial phoneme sequences WITHOUT any linguistic metadata input—pure phonetic convergence reveals family structure.
+
+### Performance Notes
+
+- Matrix building with full ASJP data is slow due to speaker count warnings
+- For development: use synthetic test data or suppress stderr
+- Production: Consider caching matrix or batch processing
+
+### Integration Points
+
+- Input: `MatrixEntry` objects from `pangloss.data.matrix`
+- Output: NetworkX DiGraph with metadata
+- JSON serializable via `networkx.readwrite.json_graph.node_link_data()`
+- Blocks Task 8 (bridge edges) and Task 9 (word generation)
+

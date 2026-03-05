@@ -1,0 +1,4 @@
+Matrix built: 40 concepts, 1024 unmapped languages
+Forms: 11873
+Total speakers: 228,985,224,125
+Sample entry: MatrixEntry(language_id='A51_BAFIA_MAJA', phonemes=['m', 'o', 'm', 'o'], speaker_count=15000, language_family='Atlantic-Congo', language_name='A51_BAFIA_MAJA', raw_value='momo')

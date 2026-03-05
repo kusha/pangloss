@@ -1,0 +1,50 @@
+Building prefix trie from synthetic test data...
+
+=== Trie Statistics ===
+Nodes: 42
+Edges: 41
+Total languages: 14
+Total entries: 14
+Total speakers: 4,021,000,000
+
+Root branches: 6
+
+=== All Root Branches ===
+  /a/: 4 langs, 877,000,000 speakers, score=877,000,000
+    Languages: ITALIAN, PORTUGUESE, ROMANIAN, ... (4 total)
+  /m/: 2 langs, 207,000,000 speakers, score=207,000,000
+    Languages: JAPANESE, KOREAN
+  /o/: 1 langs, 76,000,000 speakers, score=76,000,000
+    Languages: FRENCH
+  /v/: 4 langs, 416,000,000 speakers, score=416,000,000
+    Languages: CZECH, GERMAN, POLISH, ... (4 total)
+  /w/: 2 langs, 1,525,000,000 speakers, score=1,525,000,000
+    Languages: DUTCH, ENGLISH
+  /ʂ/: 1 langs, 920,000,000 speakers, score=920,000,000
+    Languages: MANDARIN
+
+=== Deep Nodes (depth > 2) ===
+  /w/ɔː/t/: depth=3, 1 langs, 1,500,000,000 speakers, score=4,500,000,000
+  /w/ɔː/t/ə/: depth=4, 1 langs, 1,500,000,000 speakers, score=6,000,000,000
+  /w/ɔː/t/ə/ɹ/: depth=5, 1 langs, 1,500,000,000 speakers, score=7,500,000,000
+  /ʂ/w/e/: depth=3, 1 langs, 920,000,000 speakers, score=2,760,000,000
+  /ʂ/w/e/j/: depth=4, 1 langs, 920,000,000 speakers, score=3,680,000,000
+
+=== Verification ===
+✓ Root node exists: True
+✓ Root has children: True
+✓ Trie has >15 nodes: True
+✓ Multiple branches from root: True
+✓ /w/ branch exists: True
+✓ /v/ branch exists: True
+✓ /a/ branch exists: True
+✓ /w/ has English: True
+✓ /w/ has high speaker count: True
+
+=== Language Family Clustering ===
+Checking if similar-starting languages cluster on same branches...
+  /v/ branch: 4 Germanic/Slavic languages
+  /a/ branch: 4 Romance languages
+  /w/ branch: 2 Germanic languages
+
+✅ Trie implementation verified successfully!

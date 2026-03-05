@@ -1,0 +1,13 @@
+Testing trie with small dataset...
+Building suffix trie...
+Building prefix trie...
+Suffix Trie - Nodes: 16, Edges: 15
+Root branches (common final phonemes): 3
+  /ə/: 1 langs, 1,733,824,666 speakers
+  /i/: 1 langs, 1,325,522,922 speakers
+  /a/: 2 langs, 845,208,956 speakers
+
+Prefix Trie - Nodes: 17, Edges: 16
+Root branches (initial phonemes): 4
+
+SUCCESS: Both tries functional with shared insertion logic
