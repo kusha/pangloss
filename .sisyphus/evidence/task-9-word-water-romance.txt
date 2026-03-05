@@ -1,0 +1,7 @@
+Concept: *water
+Phonemes: ['s', 'a', 'i']
+IPA: /sai/
+Form: sai
+Covered Languages: ['YUE_GUANGZHOU_SHIQIAO', 'YUE_AOMEN_2', 'YUE_XIANGGANG_1', 'YUE_LECHANG', 'YUE_GUANGZHOU_2', 'HAKKA_YICHUN_TONGGU', 'CANTONESE', 'YUE_FOSHAN', 'YUE_GUANGZHOU_CONGHUA', 'YUE_SHUNDE_DALIANG']
+Speaker Count: 2,672,991,502
+Reasoning: Core /s-a/ + /i/ covers 2,672,991,502 speakers across 18 languages. Final form: /sai/ (romanized: 'sai').

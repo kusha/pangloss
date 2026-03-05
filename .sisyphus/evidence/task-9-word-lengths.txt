@@ -1,0 +1,5 @@
+*water: shuei (len 4)
+*water: suei (len 4)
+*water: shi (len 3)
+
+Average length: 3.7

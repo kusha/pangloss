@@ -266,3 +266,9 @@ Sample entry: MatrixEntry(
   - Slavic: `/v-o/ + /d-ɐ/`
   - Indo-Aryan: `/p-ɐ/ + /n-i/`
   - Romance: broadly clustered under `/ɐ/` (due to variations like `/ɐ-k-w-ɐ/` vs `/a-g-w-a/` splitting deeper nodes).
+
+## Task 9: Word Generator
+- The naive greedy outward expansion suggested in the vision doc (dropping a phoneme from prefix and prepending to suffix) actually causes overlapping phonemes to be generated (e.g. `shshuei`).
+- To fix this and properly grow the word to make it distinctive, the implemented algorithm GROWS both the prefix and suffix by exploring their child nodes, stopping when adding a phoneme reduces speaker coverage too heavily compared to the length gain.
+- The scoring function `score = speakers * length_penalty` where `length_penalty = prefix_len * 2 + suffix_len` brilliantly solves the problem of balancing speaker coverage with word distinctiveness (length). It ensures that extending a word is accepted if the speaker drop is justified by the word becoming more robust.
+- Anti-overlap heuristics were necessary to prevent the suffix trie from simply re-adding the last character of the prefix back onto the suffix when expanding.

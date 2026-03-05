@@ -814,7 +814,7 @@ Max Concurrent: 4 (Waves 1 & 2)
   - Message: `feat(algo): implement convergence point detection in bowtie graph`
   - Files: `pangloss/algo/convergence.py`
 
-- [ ] 9. Greedy Outward Expansion — Word Generator
+- [x] 9. Greedy Outward Expansion — Word Generator
 
   **What to do**:
   - Create `pangloss/algo/generator.py` module
