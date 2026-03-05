@@ -1,0 +1,39 @@
+Matrix built: 40 concepts, 1024 unmapped languages
+=== *water Concept Stats ===
+Total languages: 11873
+Raw total_speakers: 228,985,224,125
+De-duplicated total_unique_speakers: 10,133,094,336
+Reduction: 218,852,129,789 speakers
+language_to_speakers entries: 10974
+Matches total_languages: False
+De-duplication check: total_unique_speakers <= total_speakers: True
+
+Sample language_to_speakers entries:
+  A51_BAFIA_MAJA: 15,000
+  A51_BAFIA_TUMI_TINGON: 15,000
+  A51_BAFIA_ZAKAAN: 15,000
+Matrix built: 40 concepts, 1024 unmapped languages
+Debug: entries vs language_to_speakers
+  len(entries): 11873
+  len(language_to_speakers): 10974
+  entries with speaker_count=0: 1157
+  total_languages field: 11873
+
+Duplicate language_ids in entries: 779
+Sample duplicates: [('A53_BAFIA_RIKPA', 2), ('A62_KALONGE', 2), ('ABAR', 2)]
+
+=== Verification Results ===
+✓ total_unique_speakers <= total_speakers (10.1B <= 229B)
+✓ De-duplication reduced speaker count by 96% (218.9B reduction)
+✓ language_to_speakers contains unique language_ids only (10,974 unique from 11,873 forms)
+✓ Duplicate language_ids correctly collapsed to single entry (779 languages have multiple forms)
+
+=== Semantic Correctness ===
+- Raw total_speakers: 228,985,224,125 (inflated by ASJP variants)
+- De-duplicated total_unique_speakers: 10,133,094,336 (ISO-canonical)
+- language_to_speakers maps language_id → speaker_count (last form wins for duplicates)
+- This is correct: one language should map to one speaker count, not multiple
+
+=== Edge Case Handling ===
+- Unmapped languages (speaker_count=0): 1,157 out of 11,873 forms
+- These are included in total_languages but excluded from total_unique_speakers (per plan logic)

@@ -49,8 +49,10 @@ class ConceptEntry:
         concept_name: Human-readable concept name (e.g., "*water")
         entries: List of MatrixEntry objects for this concept
         total_languages: Count of language forms
-        total_speakers: Sum of speaker counts across all forms
+        total_speakers: Sum of speaker counts across all forms (raw, may inflate due to ASJP variants)
         language_families: Set of language families represented
+        language_to_speakers: Maps language_id → speaker_count for each entry
+        total_unique_speakers: De-duplicated speaker count (ISO-canonical, same ISO counted once)
     """
 
     concept_id: str
@@ -59,6 +61,8 @@ class ConceptEntry:
     total_languages: int
     total_speakers: int
     language_families: set
+    language_to_speakers: Dict[str, int]
+    total_unique_speakers: int
 
 
 def build_matrix(
@@ -185,6 +189,21 @@ def build_matrix(
             entry.language_family for entry in entries if entry.language_family
         )
 
+        # Build language_to_speakers mapping
+        language_to_speakers = {
+            entry.language_id: entry.speaker_count for entry in entries
+        }
+
+        # Build ISO-canonical de-duplicated speaker count
+        iso_speakers_seen = {}
+        for entry in entries:
+            iso_code = asjp_to_iso.get(entry.language_id)
+            if iso_code and iso_code not in iso_speakers_seen:
+                iso_speakers_seen[iso_code] = entry.speaker_count
+            elif not iso_code and entry.speaker_count > 0:
+                iso_speakers_seen[entry.language_id] = entry.speaker_count
+        total_unique_speakers = sum(iso_speakers_seen.values())
+
         concept_entry = ConceptEntry(
             concept_id=concept_id,
             concept_name=concept.name,
@@ -192,6 +211,8 @@ def build_matrix(
             total_languages=total_languages,
             total_speakers=total_speakers,
             language_families=language_families,
+            language_to_speakers=language_to_speakers,
+            total_unique_speakers=total_unique_speakers,
         )
 
         matrix[concept.name] = concept_entry

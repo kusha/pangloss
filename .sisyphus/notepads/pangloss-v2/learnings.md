@@ -161,3 +161,39 @@ available = sorted([k.lstrip("*") for k in matrix.keys()])
 ### Files Modified
 - `pangloss/data/matrix.py` lines 115-143: Added ISO canonicalization logic
 - `data/speakers.json`: Deleted and regenerated (no format change)
+
+## Task 5: De-duplicate total_speakers (Wave 2) - 2026-03-05
+
+### Changes
+- Added fields to ConceptEntry:
+  - `language_to_speakers: Dict[str, int]` — maps language_id → speaker_count
+  - `total_unique_speakers: int` — ISO-canonical de-duplicated total
+- Kept `total_speakers` field for backward compatibility (raw sum)
+- De-duplication logic (lines 193-203 in matrix.py):
+  - Build `iso_speakers_seen` dict using `asjp_to_iso` mapping
+  - Count each ISO code only once (first occurrence wins)
+  - Include unmapped languages with speaker_count > 0 (fallback to ASJP ID)
+- Results for *water concept:
+  - Raw total_speakers: 228,985,224,125 (inflated)
+  - De-duplicated total_unique_speakers: 10,133,094,336 (96% reduction)
+  - 11,873 forms → 10,974 unique language_ids in language_to_speakers
+
+### Key Insights
+- **Duplicate language_ids**: 779 languages have multiple forms for same concept (e.g., different dialectal variants). The `language_to_speakers` dict correctly collapses these to single entries (last form wins).
+- **Unmapped languages**: 1,157 forms have speaker_count=0 (not in ISO mapping). These are excluded from `total_unique_speakers` but counted in `total_languages`.
+- **De-duplication invariant**: `total_unique_speakers <= total_speakers` holds for all 40 concepts.
+- **Backward compatibility**: Downstream code still works with `total_speakers` field. Tasks 7-8 will migrate to `total_unique_speakers`.
+- **ISO-canonical correctness**: Same pattern used as Task 4 (`asjp_to_iso.get()` → `iso_speakers_seen`). No new mappings needed — reuses existing infrastructure.
+
+### Edge Cases Handled
+- Multiple ASJP variants with same ISO code: De-duplicated (only count ISO once)
+- Unmapped ASJP languages with speakers > 0: Counted using ASJP ID as fallback
+- Duplicate language_ids in entries list: Dict comprehension naturally collapses to unique keys
+- Zero-speaker languages: Excluded from `total_unique_speakers`, kept in `total_languages`
+
+### Verification
+- Syntax check: ✓ passed
+- Import test: ✓ passed
+- Pipeline smoke test: ✓ all 40 concepts have new fields
+- De-duplication invariant: ✓ holds for all concepts
+- Evidence: `.sisyphus/evidence/task-5-dedup-speakers.txt`
