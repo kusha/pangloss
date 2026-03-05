@@ -8,8 +8,11 @@ This module bridges Wave 1 outputs (ASJP forms, speaker counts, phoneme normaliz
 into a structured matrix of language-concept entries with enriched metadata.
 """
 
+import json
+import os
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Dict, List, Optional
 
 from pangloss.data.asjp import ConceptData, LanguageData, load_asjp
@@ -65,10 +68,181 @@ class ConceptEntry:
     total_unique_speakers: int
 
 
+def _serialize_matrix_entry(entry: MatrixEntry) -> dict:
+    """Serialize MatrixEntry to JSON-compatible dict."""
+    return {
+        "language_id": entry.language_id,
+        "phonemes": entry.phonemes,
+        "speaker_count": entry.speaker_count,
+        "language_family": entry.language_family,
+        "language_name": entry.language_name,
+        "raw_value": entry.raw_value,
+    }
+
+
+def _deserialize_matrix_entry(data: dict) -> MatrixEntry:
+    """Deserialize dict to MatrixEntry dataclass."""
+    return MatrixEntry(
+        language_id=data["language_id"],
+        phonemes=data["phonemes"],
+        speaker_count=data["speaker_count"],
+        language_family=data["language_family"],
+        language_name=data["language_name"],
+        raw_value=data["raw_value"],
+    )
+
+
+def _serialize_concept_entry(entry: ConceptEntry) -> dict:
+    """Serialize ConceptEntry to JSON-compatible dict (sets → sorted lists)."""
+    return {
+        "concept_id": entry.concept_id,
+        "concept_name": entry.concept_name,
+        "entries": [_serialize_matrix_entry(e) for e in entry.entries],
+        "total_languages": entry.total_languages,
+        "total_speakers": entry.total_speakers,
+        "language_families": sorted(list(entry.language_families)),
+        "language_to_speakers": entry.language_to_speakers,
+        "total_unique_speakers": entry.total_unique_speakers,
+    }
+
+
+def _deserialize_concept_entry(data: dict) -> ConceptEntry:
+    """Deserialize dict to ConceptEntry dataclass (lists → sets)."""
+    return ConceptEntry(
+        concept_id=data["concept_id"],
+        concept_name=data["concept_name"],
+        entries=[_deserialize_matrix_entry(e) for e in data["entries"]],
+        total_languages=data["total_languages"],
+        total_speakers=data["total_speakers"],
+        language_families=set(data["language_families"]),
+        language_to_speakers=data["language_to_speakers"],
+        total_unique_speakers=data["total_unique_speakers"],
+    )
+
+
+def _compute_cache_hash(data_dir: Path) -> dict:
+    """
+    Compute hash from file stats (mtime + size) for cache invalidation.
+
+    Uses mtime + size (NOT full content) for 100MB+ files.
+
+    Returns:
+        Dict with file stats for forms.csv, parameters.csv, languages.csv, speakers.json
+    """
+    files = [
+        data_dir / "cldf" / "forms.csv",
+        data_dir / "cldf" / "parameters.csv",
+        data_dir / "cldf" / "languages.csv",
+        Path(__file__).parent.parent.parent / "data" / "speakers.json",
+    ]
+
+    meta = {"version": "2"}
+    for file_path in files:
+        if not file_path.exists():
+            # Missing file invalidates cache
+            return {}
+        stat = os.stat(file_path)
+        key_base = file_path.stem if file_path.stem != "speakers" else "speakers"
+        meta[f"{key_base}_mtime"] = stat.st_mtime
+        meta[f"{key_base}_size"] = stat.st_size
+
+    return meta
+
+
+def _load_matrix_cache(
+    cache_path: Path, data_dir: Path
+) -> Optional[Dict[str, ConceptEntry]]:
+    """
+    Load matrix from cache if valid (matching file stats).
+
+    Args:
+        cache_path: Path to cache JSON
+        data_dir: ASJP data directory (for hash validation)
+
+    Returns:
+        Dict mapping concept_name to ConceptEntry, or None if cache invalid/missing
+    """
+    if not cache_path.exists():
+        return None
+
+    try:
+        with open(cache_path, "r", encoding="utf-8") as f:
+            cached = json.load(f)
+
+        # Validate cache structure
+        if "meta" not in cached or "matrix" not in cached:
+            print("Cache invalid: missing meta or matrix", file=sys.stderr)
+            return None
+
+        # Check if cache is stale (file stats changed)
+        current_meta = _compute_cache_hash(data_dir)
+        if not current_meta:
+            print("Cache invalid: missing input files", file=sys.stderr)
+            return None
+
+        if cached["meta"] != current_meta:
+            print("Cache invalidated: input files changed", file=sys.stderr)
+            return None
+
+        # Deserialize matrix
+        matrix = {
+            concept_name: _deserialize_concept_entry(data)
+            for concept_name, data in cached["matrix"].items()
+        }
+
+        print(f"Cache hit: loaded {len(matrix)} concepts from cache", file=sys.stderr)
+        return matrix
+
+    except Exception as e:
+        print(f"Warning: Could not load cache from {cache_path}: {e}", file=sys.stderr)
+        return None
+
+
+def _save_matrix_cache(
+    matrix: Dict[str, ConceptEntry], cache_path: Path, data_dir: Path
+):
+    """
+    Save matrix to cache with file stats metadata.
+
+    Args:
+        matrix: Dict mapping concept_name to ConceptEntry
+        cache_path: Path to cache JSON
+        data_dir: ASJP data directory (for hash computation)
+    """
+    try:
+        meta = _compute_cache_hash(data_dir)
+        if not meta:
+            print(
+                "Warning: Could not compute cache hash, skipping cache save",
+                file=sys.stderr,
+            )
+            return
+
+        cache_data = {
+            "meta": meta,
+            "matrix": {
+                concept_name: _serialize_concept_entry(entry)
+                for concept_name, entry in matrix.items()
+            },
+        }
+
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(cache_path, "w", encoding="utf-8") as f:
+            json.dump(cache_data, f, indent=2)
+
+        print(f"Cache saved: {len(matrix)} concepts to {cache_path}", file=sys.stderr)
+
+    except Exception as e:
+        print(f"Warning: Could not save cache to {cache_path}: {e}", file=sys.stderr)
+
+
 def build_matrix(
     asjp_data: Dict[str, ConceptData],
     speaker_counts: Dict[str, int],
     languages: Optional[Dict[str, LanguageData]] = None,
+    no_cache: bool = False,
+    cache_path: Optional[Path] = None,
+    data_dir: Optional[Path] = None,
 ) -> Dict[str, ConceptEntry]:
     """
     Build language-concept matrix from ASJP data and speaker counts.
@@ -87,6 +261,9 @@ def build_matrix(
         asjp_data: Dict mapping concept_id to ConceptData (from load_asjp)
         speaker_counts: Dict mapping language_id to speaker count (from load_speaker_counts)
         languages: Optional dict mapping language_id to LanguageData (default: load from ASJP)
+        no_cache: If True, bypass cache and force rebuild
+        cache_path: Path to cache JSON (default: data/matrix_cache.json)
+        data_dir: ASJP data directory for cache validation (default: data/asjp)
 
     Returns:
         Dict mapping concept_name (e.g., "*water") to ConceptEntry with enriched data
@@ -98,12 +275,23 @@ def build_matrix(
         >>> water = matrix['*water']
         >>> print(f"Languages: {water.total_languages}, Speakers: {water.total_speakers:,}")
     """
+    # Set default paths
+    if cache_path is None:
+        cache_path = Path(__file__).parent.parent.parent / "data" / "matrix_cache.json"
+    if data_dir is None:
+        data_dir = Path("data/asjp")
+
+    # Check cache (unless no_cache flag set)
+    if not no_cache:
+        cached_matrix = _load_matrix_cache(cache_path, data_dir)
+        if cached_matrix is not None:
+            return cached_matrix
+
     from pangloss.data.speakers import get_all_asjp_iso_mappings
 
     matrix = {}
 
     if languages is None:
-        from pathlib import Path
         from pangloss.data.asjp import _parse_languages
 
         languages_file = Path("data/asjp/cldf/languages.csv")
@@ -225,6 +413,10 @@ def build_matrix(
         f"Matrix built: {len(matrix)} concepts, {len(unmapped_languages)} unmapped languages",
         file=sys.stderr,
     )
+
+    # Save to cache (unless no_cache flag set)
+    if not no_cache:
+        _save_matrix_cache(matrix, cache_path, data_dir)
 
     return matrix
 

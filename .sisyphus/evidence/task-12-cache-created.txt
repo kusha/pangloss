@@ -1,0 +1,81 @@
+============================================================
+Pangloss Pipeline: Phonetic Convergence-Based Synthesis
+============================================================
+Data directory: data/asjp
+Output directory: output
+Coverage threshold: 90.0%
+Output format: json
+============================================================
+
+[1/3] Loading ASJP data...
+  ✓ Loaded 40 concepts
+
+[2/3] Loading speaker counts...
+  ✓ Loaded 10719 language population entries
+
+[3/3] Building language-concept matrix...
+Matrix built: 40 concepts, 1024 unmapped languages
+Cache saved: 40 concepts to /Users/kusha/Sources/pangloss/data/matrix_cache.json
+  ✓ Matrix built with 40 concepts
+
+============================================================
+Processing concepts...
+============================================================
+✓ *I: 18 synonyms, 0.4% coverage
+✓ *you: 19 synonyms, 4.1% coverage
+✓ *we: 20 synonyms, 0.4% coverage
+✓ *one: 20 synonyms, 0.3% coverage
+✓ *two: 18 synonyms, 0.4% coverage
+✓ *person: 20 synonyms, 0.3% coverage
+✓ *fish: 19 synonyms, 0.4% coverage
+✓ *dog: 18 synonyms, 24.5% coverage
+✓ *louse: 19 synonyms, 0.4% coverage
+✓ *tree: 20 synonyms, 0.1% coverage
+✓ *leaf: 20 synonyms, 0.4% coverage
+✓ *skin: 18 synonyms, 1.0% coverage
+✓ *blood: 19 synonyms, 0.2% coverage
+✓ *bone: 13 synonyms, 18.2% coverage
+✓ *horn: 18 synonyms, 6.1% coverage
+✓ *ear: 18 synonyms, 12.7% coverage
+✓ *eye: 19 synonyms, 11.4% coverage
+✓ *nose: 18 synonyms, 2.4% coverage
+✓ *tooth: 20 synonyms, 16.4% coverage
+✓ *tongue: 20 synonyms, 1.3% coverage
+✓ *knee: 20 synonyms, 0.4% coverage
+✓ *hand: 20 synonyms, 0.4% coverage
+✓ *breasts: 18 synonyms, 1.6% coverage
+✓ *liver: 19 synonyms, 45.9% coverage
+✓ *drink: 20 synonyms, 0.1% coverage
+✓ *see: 19 synonyms, 1.7% coverage
+✓ *hear: 15 synonyms, 2.0% coverage
+✓ *die: 20 synonyms, 1.6% coverage
+✓ *come: 20 synonyms, 0.4% coverage
+✓ *sun: 18 synonyms, 1.5% coverage
+✓ *star: 16 synonyms, 1.5% coverage
+✓ *water: 19 synonyms, 0.8% coverage
+✓ *stone: 19 synonyms, 2.1% coverage
+✓ *fire: 20 synonyms, 0.1% coverage
+✓ *path: 20 synonyms, 1.2% coverage
+✓ *mountain: 19 synonyms, 0.8% coverage
+✓ *night: 19 synonyms, 1.6% coverage
+✓ *full: 20 synonyms, 0.5% coverage
+✓ *new: 20 synonyms, 0.5% coverage
+✓ *name: 17 synonyms, 31.9% coverage
+
+============================================================
+Saving outputs...
+============================================================
+  ✓ Dictionary saved to output/dictionary.json
+  ✓ Summary saved to output/summary.json
+  ✓ 40 graph files saved to output/graphs/
+
+============================================================
+Pipeline complete: 40/40 concepts processed
+Average coverage: 12.9%
+Average synonyms per concept: 18.8
+Total unique languages: 1094
+Total unique families: 44
+Output written to: output/
+============================================================
+meta keys: ['version', 'forms_mtime', 'forms_size', 'parameters_mtime', 'parameters_size', 'languages_mtime', 'languages_size', 'speakers_mtime', 'speakers_size']
+matrix concepts: 40

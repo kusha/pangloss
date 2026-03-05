@@ -572,3 +572,71 @@ Created `pangloss/algo/collisions.py` with three collision detection mechanisms:
 
 Full collision report: `.sisyphus/evidence/task-9-collision-report.txt`
 
+
+---
+## Task 10: Articulatory Features and Phoneme Distance (2026-03-05)
+
+### Implementation Details
+
+**Added to `pangloss/data/phonemes.py`:**
+- `ARTICULATORY_FEATURES` dict with 82 IPA phonemes
+  - Format: `phoneme → (place, manner, voicing)` tuples
+  - Coverage: stops, fricatives, affricates, nasals, approximants, laterals, trills, taps, vowels
+  - Organized by phonological classes for maintainability
+
+**Distance calculation logic:**
+- 0.0: Identical phonemes
+- 0.1: Same manner + place, voicing differs only (t↔d, p↔b)
+- 0.3: Same manner, place differs (t↔k, m↔n)
+- 0.5: Same manner, both place and voicing differ
+- 0.7: Different manner within consonants (t↔s, n↔l)
+- 1.0: Vowel vs consonant or unknown phoneme
+
+**Multi-character phoneme handling:**
+- Direct lookup first: `tʃ`, `dʒ`, `ts`, `dz` in feature dict
+- Fallback to base character (first char) if full phoneme not found
+- Length markers (aː) fall back to base vowel (a), distance = 0.0
+
+### Phonological Patterns Discovered
+
+1. **Affricates are multi-char**: `tʃ`, `dʒ` stored as full sequences in feature dict
+2. **Length is non-distinctive for distance**: `aː` vs `a` = 0.0 (same phoneme, different length)
+3. **Voicing pairs cluster at 0.1**: t/d, p/b, k/ɡ, s/z, f/v all return 0.1 distance
+4. **Place differences consistent**: Alveolar→velar (t→k) = bilabial→velar (p→k) = 0.3
+
+### Verification Results
+
+All scenarios passed:
+- Identical phonemes: 0.0 ✓
+- Voicing differences: 0.1 ✓
+- Place differences: 0.3 ✓
+- Vowel vs consonant: 1.0 ✓
+- Multi-char affricates: tʃ↔dʒ = 0.1 ✓
+- Length markers: aː↔a = 0.0 ✓
+- Fuzzy matching: threshold=0.5 correctly separates similar/dissimilar pairs ✓
+
+Evidence saved: `.sisyphus/evidence/task-10-phoneme-distance.txt`
+
+### Design Decisions
+
+**Why hardcode features instead of dynamic extraction?**
+- Phonological features are static linguistic knowledge
+- No need for runtime computation or external dependencies
+- Explicit mapping improves maintainability and debugging
+
+**Why 82 phonemes?**
+- Covers all ASJP consonants + common vowels
+- Includes multi-char affricates used in English/Romance
+- Balances coverage vs maintainability (not exhaustive IPA chart)
+
+**Why vowel vs consonant = 1.0?**
+- Different manner classes (vowel vs any consonant manner)
+- Reflects maximal articulatory distance in phonological space
+- Prevents false positives in fuzzy matching
+
+### Integration Notes
+
+- Module extends existing `phonemes.py` without modifying normalization functions
+- Functions work with normalized or non-normalized phonemes
+- Compatible with ASJP multi-character sequences (tʃ, dʒ, aː)
+- Ready for fuzzy matching in cognate detection (Task 11)

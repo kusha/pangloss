@@ -67,7 +67,10 @@ def version():
     help="Output format",
 )
 @click.option("--verbose", is_flag=True, help="Print per-concept progress")
-def generate(data_dir, output_dir, coverage_threshold, concept, format_choice, verbose):
+@click.option("--no-cache", is_flag=True, help="Force rebuild, bypass matrix cache")
+def generate(
+    data_dir, output_dir, coverage_threshold, concept, format_choice, verbose, no_cache
+):
     """Generate synthetic vocabulary from ASJP data."""
     # Validate coverage threshold
     if not 0.0 <= coverage_threshold <= 1.0:
@@ -121,7 +124,7 @@ def generate(data_dir, output_dir, coverage_threshold, concept, format_choice, v
     try:
         if verbose:
             click.echo("\n[3/3] Building language-concept matrix...")
-        matrix = build_matrix(asjp_data, speaker_counts)
+        matrix = build_matrix(asjp_data, speaker_counts, no_cache=no_cache)
         if verbose:
             click.echo(f"  ✓ Matrix built with {len(matrix)} concepts")
     except Exception as e:
