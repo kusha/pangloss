@@ -11,6 +11,7 @@ phonetic universals (e.g., Romance languages clustering around /a/ or /ak/ for w
 
 from dataclasses import dataclass
 from typing import Any, List, Set
+import math
 import networkx as nx
 
 
@@ -41,6 +42,7 @@ def find_convergence_points(
     suffix_trie: nx.DiGraph,
     entries: List[Any],
     k: int = 10,
+    distinctness_threshold: float = 0.5,
 ) -> List[ConvergencePoint]:
     """
     Find the top-K phonetic convergence points for a concept.
@@ -108,7 +110,7 @@ def find_convergence_points(
             continue
 
         # Score formula: reward both specificity (depth) and coverage (speaker_count)
-        score = float(depth * speaker_count)
+        score = float(depth * math.log1p(speaker_count))
 
         # Retrieve sequences for the dataclass (re-reverse suffix)
         p_seq = prefix_trie.nodes[prefix_id]["phoneme_sequence"]
@@ -136,13 +138,13 @@ def find_convergence_points(
         # Ensure candidate represents a distinct phonetic cluster
         is_distinct = True
         for selected in distinct_points:
-            overlap = len(candidate.languages & selected.languages)
-            min_len = min(len(candidate.languages), len(selected.languages))
-
-            # If >20% overlap, they cover the same language family
-            if min_len > 0 and (overlap / min_len) > 0.2:
-                is_distinct = False
-                break
+            # Use Jaccard similarity for symmetric distinctness measure
+            union_len = len(candidate.languages | selected.languages)
+            if union_len > 0:
+                jaccard = len(candidate.languages & selected.languages) / union_len
+                if jaccard > distinctness_threshold:
+                    is_distinct = False
+                    break
 
         if is_distinct:
             distinct_points.append(candidate)

@@ -1,0 +1,101 @@
+=== TASK 7: GENERATOR SCORING FORMULA FIX - EVIDENCE ===
+Timestamp: 2026-03-05
+Task: Fix generator scoring to PENALIZE length and use de-duplicated total_speakers
+
+## 1. CODE CHANGES VERIFIED
+
+### calculate_score() Formula (lines 52-54)
+OLD (REWARDS length): speakers * ((prefix_len * 2) + suffix_len)
+NEW (PENALIZES length): speakers / (1.0 + 0.5 * length)
+
+### generate_word() Parameters (lines 58-63)
+ADDED: total_speakers: int (no default, caller must provide)
+ADDED: max_word_length: int = 8 (default value 8)
+
+### Line 64: total_world_speakers Assignment
+OLD: sum(e.speaker_count for e in entries)  # Inflated by 96%
+NEW: total_speakers  # De-duplicated from ConceptEntry.total_unique_speakers
+
+### Lines 96, 133: max_word_length Variable
+OLD: while len(current_prefix) + len(current_suffix) < 8:
+NEW: while len(current_prefix) + len(current_suffix) < max_word_length:
+
+## 2. SCORING FORMULA BEHAVIOR
+
+Formula: speakers / (1.0 + 0.5 * length)
+
+Length Scores (1M speakers):
+- Length 1: 666,666.67 (HIGHEST - short forms preferred)
+- Length 2: 500,000.00
+- Length 3: 400,000.00
+- Length 4: 333,333.33
+- Length 5: 285,714.29
+- Length 8: 200,000.00
+- Length 10: 166,666.67 (LOWEST - long forms penalized)
+
+✅ VERIFIED: Shorter words receive HIGHER scores → greedy extension stops early
+
+## 3. DE-DUPLICATED SPEAKER COUNTS
+
+Water Concept Statistics:
+- Raw sum (old): 228,985,224,125 speakers (INFLATED)
+- De-duplicated (new): 10,133,094,336 speakers (CORRECT)
+- Reduction: 96% (ASJP variant inflation eliminated)
+
+✅ VERIFIED: coverage_pct now uses de-duplicated total → realistic percentages
+
+## 4. GENERATED WORD LENGTH VERIFICATION
+
+Test with different starting convergence points:
+- Start: ['w']+[] → Final: w (1 phoneme) ✅ SHORT
+- Start: ['w', 'a']+[] → Final: wa (2 phonemes) ✅ SHORT
+- Start: ['w', 'a', 't']+['ə'] → Final: wate (4 phonemes)
+- Start: ['w', 'a', 't', 'ə', 'r']+[] → Final: water (5 phonemes)
+
+Average length: 3 phonemes (well below max_word_length=8)
+
+✅ VERIFIED: Generator produces SHORT forms (average ≤ 5 phonemes)
+
+## 5. COVERAGE PERCENTAGE CORRECTNESS
+
+Example: /ɐ/ convergence point
+- Speaker count: 2,443,935,589
+- Total unique speakers: 10,133,094,336
+- Coverage: 24.12% ✅ REALISTIC (within 0-100% range)
+
+Old behavior would have shown:
+- 2,443,935,589 / 228,985,224,125 = 1.07% (DEFLATED due to inflated denominator)
+
+✅ VERIFIED: coverage_pct values are reasonable and not inflated/deflated
+
+## 6. PIPELINE INTEGRATION
+
+Dependencies:
+- Task 5 (COMPLETE): ConceptEntry.total_unique_speakers available
+- Task 6 (IN PROGRESS): Convergence scoring (independent, parallel)
+
+Downstream impacts:
+- Task 8: Selector will receive SHORT forms with correct coverage
+- Task 11: Fuzzy matching will work with concise word forms
+- Task 13: CLI will wire up max_word_length parameter
+
+✅ VERIFIED: Generator is ready for integration
+
+## 7. EDGE CASES HANDLED
+
+1. Zero-length protection: 1.0 + 0.5 * length ensures denominator ≥ 1.0
+2. Empty convergence point: Fallback to ["a"] if final_phonemes is empty
+3. Missing nodes: Greedy extension breaks cleanly when trie node not found
+
+✅ VERIFIED: No division by zero, no crashes on edge cases
+
+## CONCLUSION
+
+All 5 requirements from plan completed:
+1. ✅ calculate_score() uses new penalty formula
+2. ✅ generate_word() has total_speakers parameter
+3. ✅ generate_word() has max_word_length parameter (default 8)
+4. ✅ Line 64 uses total_speakers instead of sum()
+5. ✅ Lines 96, 133 use max_word_length variable
+
+Generator now produces SHORT, high-coverage words with CORRECT coverage percentages.

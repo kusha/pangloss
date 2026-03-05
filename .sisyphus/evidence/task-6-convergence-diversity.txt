@@ -1,0 +1,33 @@
+Matrix built: 40 concepts, 1024 unmapped languages
+Found 10 convergence points for *water:
+
+1. [w-ɐ-r-ɐ-b-b] + [i-j-o-w]
+   1 languages, 2,752,200 speakers, score=148.28
+
+2. [k-ə-l] + [o-+-k-ɐ-+-o-k-o-tʃ-i]
+   1 languages, 62,100 speakers, score=143.47
+
+3. [ɐ-i-+-dʒ-e] + [r-n-i-n-ŋ]
+   1 languages, 300,000 speakers, score=126.12
+
+4. [tʃ-ɐ-j] + [l-ɐ-m-ɐ-k]
+   1 languages, 6,797,920 speakers, score=125.86
+
+5. [n-d-i-j] + [ɐ-m-dʒ-i]
+   1 languages, 4,742,100 speakers, score=122.98
+
+6. [s] + [u-e-i-+-s-u]
+   1 languages, 41,065,160 speakers, score=122.71
+
+7. [ʃ-i-e-i-+] + [ʃ-i]
+   1 languages, 41,065,160 speakers, score=122.71
+
+8. [s-u-e-i-+] + [ʃ-i]
+   1 languages, 41,065,160 speakers, score=122.71
+
+9. [ts] + [u-i-ts-u-i-ʔ]
+   1 languages, 40,377,924 speakers, score=122.60
+
+10. [m-i-n-i] + [m-i-n-i]
+   18 languages, 2,441,307 speakers, score=117.66
+

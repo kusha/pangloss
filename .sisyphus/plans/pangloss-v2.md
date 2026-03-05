@@ -590,7 +590,7 @@ if water:
   - Message: `feat(matrix): de-duplicate total_speakers by ISO code, add language_to_speakers`
   - Files: `pangloss/data/matrix.py`
 
-- [ ] 6. Fix convergence scoring formula
+- [x] 6. Fix convergence scoring formula
 
   **What to do**:
   - In `pangloss/algo/convergence.py` line 111: Change `score = float(depth * speaker_count)` to `score = float(depth * math.log1p(speaker_count))`.
@@ -685,7 +685,7 @@ for i, p in enumerate(points[:5]):
   - Message: `feat(convergence): use log-dampened scoring, Jaccard distinctness filter`
   - Files: `pangloss/algo/convergence.py`
 
-- [ ] 7. Fix generator scoring formula
+- [x] 7. Fix generator scoring formula
 
   **What to do**:
   - In `pangloss/algo/generator.py` lines 52-56: Replace the scoring function that REWARDS length with one that PENALIZES length:

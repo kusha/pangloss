@@ -1,0 +1,8 @@
+QA Scenario 1: Verify math.log1p(0) = 0.0 (zero-safe)
+
+Command: python -c "import math; print(math.log1p(0))"
+Result: 0.0
+
+✓ PASS: log1p(0) returns 0.0 without math errors
+✓ Zero speaker counts are safe (no NaN, no infinity)
+✓ Formula: score = depth * log1p(speaker_count) handles edge cases correctly
