@@ -17,6 +17,7 @@ except ImportError:
     YAML_AVAILABLE = False
 
 from pangloss.algo.generator import SyntheticWord
+from pangloss.algo.collisions import detect_collisions
 
 
 def format_dictionary(
@@ -135,7 +136,10 @@ def format_dictionary(
             }
         )
 
-    return {"concepts": concepts}
+    # Add collision report
+    collisions = detect_collisions(results)
+
+    return {"concepts": concepts, "collisions": collisions}
 
 
 def _generate_source_pattern(word: SyntheticWord) -> str:

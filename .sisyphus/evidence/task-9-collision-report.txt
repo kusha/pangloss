@@ -1,0 +1,230 @@
+================================================================================
+COLLISION DETECTION REPORT - Task 9
+================================================================================
+
+Total Exact Collisions: 0
+Total Near Collisions: 14
+Total Within-Concept Collisions: 118
+
+--------------------------------------------------------------------------------
+EXACT COLLISIONS (Cross-Concept)
+--------------------------------------------------------------------------------
+No exact collisions found.
+
+--------------------------------------------------------------------------------
+NEAR COLLISIONS (Cross-Concept, IPA Similarity >= 0.85)
+--------------------------------------------------------------------------------
+Similarity: 0.870
+  Pair 1: *I - kywantau [/kjwɐntɐu/]
+  Pair 2: *we - kywantautui [/kjwɐntɐutui/]
+
+Similarity: 0.960
+  Pair 1: *I - inte+fanfan [/inte+fɐnfɐn/]
+  Pair 2: *you - ite+fanfan [/ite+fɐnfɐn/]
+
+Similarity: 0.889
+  Pair 1: *you - nan+men [/nɐn+mən/]
+  Pair 2: *name - san+men [/sɐn+mən/]
+
+Similarity: 0.867
+  Pair 1: *you - ni+tuai+neing [/ni+tuɐi+neiŋ/]
+  Pair 2: *we - huai+tuai+neing [/huɐi+tuɐi+neiŋ/]
+
+Similarity: 0.857
+  Pair 1: *person - nyien+ien [/ɲien+ien/]
+  Pair 2: *eye - ien+tshien [/ien+tʃien/]
+
+Similarity: 0.857
+  Pair 1: *person - nyien+ien [/ɲien+ien/]
+  Pair 2: *star - shien+shien [/ʃien+ʃien/]
+
+Similarity: 0.857
+  Pair 1: *dog - fandruaka [/fɐndruɐkɐ/]
+  Pair 2: *horn - tandruka [/tɐndrukɐ/]
+
+Similarity: 0.923
+  Pair 1: *louse - shia+phu+tsi [/ʃia+phu+tsi/]
+  Pair 2: *breasts - shing+phu+tsi [/ʃiŋ+phu+tsi/]
+
+Similarity: 0.889
+  Pair 1: *louse - shia+phu+tsi [/ʃia+phu+tsi/]
+  Pair 2: *breasts - shiong+phu+tsi [/ʃioŋ+phu+tsi/]
+
+Similarity: 0.857
+  Pair 1: *bone - ku+theu [/ku+thəu/]
+  Pair 2: *tongue - kuan+tsheu [/kuɐn+tshəu/]
+
+Similarity: 0.857
+  Pair 1: *eye - ian+tshin [/iɐn+tʃin/]
+  Pair 2: *hear - thin+tshin [/thin+tʃin/]
+
+Similarity: 0.909
+  Pair 1: *eye - ien+tshien [/ien+tʃien/]
+  Pair 2: *star - shien+shien [/ʃien+ʃien/]
+
+Similarity: 0.900
+  Pair 1: *tooth - nyio+tshi [/ɲio+tshi/]
+  Pair 2: *name - mio+tshi [/mio+tshi/]
+
+Similarity: 0.897
+  Pair 1: *breasts - sei+teu+kho [/sei+təu+khoo/]
+  Pair 2: *sun - nyiei+teu+kho [/ɲiei+təu+khoo/]
+
+--------------------------------------------------------------------------------
+WITHIN-CONCEPT COLLISIONS (Same Concept, Synonyms Too Similar)
+--------------------------------------------------------------------------------
+Concept: *I
+  Forms: watashi, watasi
+  Similarity: 0.875
+  Type: ipa
+
+Concept: *I
+  Forms: ayinqine, ayin+qin
+  Similarity: 0.900
+  Type: ipa
+
+Concept: *you
+  Forms: nyi+men, ni+men
+  Similarity: 0.875
+  Type: ipa
+
+Concept: *you
+  Forms: nan+men, nen+men
+  Similarity: 0.889
+  Type: ipa
+
+Concept: *you
+  Forms: nei+dei, nei+tei
+  Similarity: 0.889
+  Type: ipa
+
+Concept: *you
+  Forms: lei+tei, nei+tei
+  Similarity: 0.889
+  Type: ipa
+
+Concept: *we
+  Forms: ngai+tan+ngin, ngai+ten+ngin
+  Similarity: 0.923
+  Type: ipa
+
+Concept: *we
+  Forms: ngai+tau+nyin, ngoi+tau+nyin
+  Similarity: 0.923
+  Type: ipa
+
+Concept: *two
+  Forms: futatsu, hutatsu
+  Similarity: 0.889
+  Type: ipa
+
+Concept: *two
+  Forms: futatsu, futatsi
+  Similarity: 0.889
+  Type: ipa
+
+Concept: *person
+  Forms: ser+umano, asere+umano
+  Similarity: 0.880
+  Type: ipa
+
+Concept: *person
+  Forms: tshelovek, tshelavek
+  Similarity: 0.900
+  Type: ipa
+
+Concept: *person
+  Forms: tshelawek, tshelavek
+  Similarity: 0.900
+  Type: ipa
+
+Concept: *fish
+  Forms: bizi+a+maza, bisi+amaza
+  Similarity: 0.880
+  Type: ipa
+
+Concept: *dog
+  Forms: keu+tsi, kou+tsi
+  Similarity: 0.889
+  Type: ipa
+
+Concept: *dog
+  Forms: fandruaka, fandroaka
+  Similarity: 0.909
+  Type: ipa
+
+Concept: *louse
+  Forms: se+po+tsi, se+pho+tsi
+  Similarity: 0.870
+  Type: ipa
+
+Concept: *leaf
+  Forms: shu+ie+tsi, shu+ia+tsi
+  Similarity: 0.909
+  Type: ipa
+
+Concept: *leaf
+  Forms: shu+ie+tsi, shu+ie+tsi
+  Similarity: 1.000
+  Type: exact_form
+
+Concept: *leaf
+  Forms: shu+ie+tsi, zu+ie+tsi
+  Similarity: 0.870
+  Type: ipa
+
+Concept: *leaf
+  Forms: zu+nyia+tse, su+ia+tse
+  Similarity: 0.889
+  Type: ipa
+
+Concept: *skin
+  Forms: ʒeu+phi+tsi, ʒeu+phi+te
+  Similarity: 0.880
+  Type: ipa
+
+Concept: *skin
+  Forms: kaⁿda+ya+nitu, kanda+a+nitu
+  Similarity: 0.897
+  Type: ipa
+
+Concept: *skin
+  Forms: hantshi+lipʼitshi, khantshi+lipʼitshi
+  Similarity: 0.941
+  Type: ipa
+
+Concept: *blood
+  Forms: sangɡre, sanɡre
+  Similarity: 0.875
+  Type: ipa
+
+Concept: *blood
+  Forms: neturu, netaru
+  Similarity: 0.889
+  Type: ipa
+
+Concept: *bone
+  Forms: ku+theu, ku+thou
+  Similarity: 0.889
+  Type: ipa
+
+Concept: *bone
+  Forms: ku+theu, kur+thieu
+  Similarity: 0.857
+  Type: ipa
+
+Concept: *bone
+  Forms: kuat+thau, kwat+thau
+  Similarity: 0.909
+  Type: ipa
+
+Concept: *bone
+  Forms: kuat+thau, kuak+thau
+  Similarity: 0.909
+  Type: ipa
+
+... and 88 more within-concept collisions
+
+================================================================================
+END OF REPORT
+================================================================================

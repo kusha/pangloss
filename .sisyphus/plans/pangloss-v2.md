@@ -869,7 +869,7 @@ assert len(zero_syn) == 0, f'Some concepts have 0 synonyms: {zero_syn}'
   - Message: `feat(selector): use exact per-language marginal gains instead of proportional estimate`
   - Files: `pangloss/algo/selector.py`, `pangloss/cli.py`
 
-- [ ] 9. Add collision detection module + CLI integration
+- [x] 9. Add collision detection module + CLI integration
 
   **What to do**:
   - Create new file `pangloss/algo/collisions.py` with a `detect_collisions()` function.

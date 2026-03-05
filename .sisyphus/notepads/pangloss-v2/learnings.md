@@ -503,3 +503,72 @@ coverage = (sum of deduplicated speakers from selected synonyms)
   - Result: `convergence.py` now populates its top `k=20` candidates with deep, highly-specific phonetic clusters belonging to small/medium language families.
 - **Selector Impact**: `selector.py` perfectly calculates marginal gains, but it only has those 20 specific/small candidates to choose from. Even if it selects all 20, the combined population of 20 small language families naturally sits around ~12.88%.
 - **Action**: The baseline expectation of `> 36.25%` in the plan is a logical contradiction. You cannot simultaneously penalize the most populated languages (via log-dampening) and expect absolute population coverage to increase given a fixed `k=20` candidate limit. Task 8 is complete and mathematically sound.
+
+## Task 9: Collision Detection Module
+
+**Date**: 2026-03-05
+
+### Implementation
+
+Created `pangloss/algo/collisions.py` with three collision detection mechanisms:
+
+1. **Exact collisions**: Normalized form/IPA matching across different concepts
+   - Build maps: `normalized_form → list[(concept, word)]`
+   - Detect cross-concept duplicates
+   - Check BOTH `form` and `ipa` fields separately
+
+2. **Near-collisions**: IPA similarity ≥ 0.85 across different concepts
+   - Use `difflib.SequenceMatcher(None, ipa1, ipa2).ratio()`
+   - Filter to cross-concept pairs only
+   - Deduplicate symmetric pairs
+
+3. **Within-concept collisions**: Same-concept synonyms that are too similar
+   - Check exact form match OR IPA similarity ≥ 0.85
+   - Prevents redundant synonyms within a concept
+
+### Integration
+
+- Modified `pangloss/output/dictionary.py` to import and call `detect_collisions()`
+- Added `"collisions"` top-level key to dictionary output
+- No changes needed to `cli.py` — integration happens in `format_dictionary()`
+
+### Results (40 concepts, ~18 synonyms/concept)
+
+- **0 exact collisions** (no cross-concept duplicates)
+- **14 near collisions** (cross-concept IPA similarity ≥ 0.85)
+- **118 within-concept collisions** (synonyms too similar)
+
+### Key Findings
+
+**Near-collision examples**:
+- `*I` "inte+fanfan" vs `*you` "ite+fanfan" (0.960 similarity)
+- `*breasts` "sei+teu+kho" vs `*sun` "nyiei+teu+kho" (0.897 similarity)
+- Common pattern: Sinitic language compounds with shared morphemes
+
+**Within-concept collision examples**:
+- `*I`: "watashi" vs "watasi" (0.875) — Japanese romanization variance
+- `*you`: "nyi+men" vs "ni+men" (0.875) — Mandarin phonetic variance
+- Common pattern: Transcription inconsistencies in source data
+
+### Architectural Notes
+
+**Why no CLI changes needed**: 
+- `detect_collisions()` called from `format_dictionary()`, which is already invoked by CLI
+- Avoids coupling CLI logic to collision detection
+- Collision detection is a formatting concern, not a pipeline step
+
+**Data structure design**:
+- Returns structured dict with three lists
+- Each collision type has specific metadata (form, concepts, similarity, type)
+- Report is self-documenting and easy to parse
+
+**Performance considerations**:
+- O(n²) near-collision check for cross-concept pairs
+- 40 concepts × ~18 synonyms = ~720 words → ~259K pair comparisons
+- Runs in ~1-2 seconds (acceptable for batch processing)
+- Future optimization: spatial indexing for IPA similarity if needed
+
+### Evidence
+
+Full collision report: `.sisyphus/evidence/task-9-collision-report.txt`
+
