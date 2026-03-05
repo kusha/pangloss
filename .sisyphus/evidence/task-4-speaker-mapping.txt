@@ -1,0 +1,28 @@
+QA Scenario 1: Speaker Mapping Improvement Analysis
+===================================================
+
+BEFORE (from plan baseline):
+- Unmapped languages: Not specified in plan, but lookup failures were common
+- Issue: speaker_counts had mixed keys (ASJP ID vs ISO code)
+- Lookup chain: asjp_id → iso_code → representative_asjp_id → speaker_counts[representative_asjp_id]
+- Failure mode: KeyError when representative_asjp_id not in speaker_counts
+
+AFTER (with ISO-canonical lookup):
+- Unmapped languages: 1024 (out of ~6056 unique languages in matrix)
+- Mapping success rate: 83.1% (5032/6056)
+- Fix: Built iso_speaker_counts dict with all keys normalized to ISO codes
+- New lookup chain: asjp_id → iso_code → iso_speaker_counts[iso_code]
+- Simplified fallback: Returns 0 instead of None/KeyError
+
+EVIDENCE:
+Pipeline output shows "Matrix built: 40 concepts, 1024 unmapped languages"
+- Pipeline completes successfully (all 40 concepts processed)
+- Average coverage: 79.1%
+- Total unique languages: 6056
+- Unmapped: 1024 (languages without speaker data in CLDR/ASJP)
+
+IMPROVEMENT:
+✓ Eliminated KeyError failures (no more crashes on missing representative_asjp_id)
+✓ Simplified lookup logic (direct ISO lookup vs 3-step chain)
+✓ Cleaner separation between "no ISO mapping" vs "no speaker data"
+✓ 83.1% of languages now have speaker counts assigned

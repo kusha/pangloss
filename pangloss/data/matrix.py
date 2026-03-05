@@ -117,6 +117,28 @@ def build_matrix(
 
     iso_to_asjp_representative = load_asjp_languages()
 
+    # Build ISO-canonical speaker count lookup
+    # speaker_counts has mixed keys (ASJP ID or ISO code)
+    # Normalize all keys to ISO codes for consistent lookup
+    iso_speaker_counts = {}
+    for key, count in speaker_counts.items():
+        # If key is already an ISO code (lowercase 3-letter), use it directly
+        if len(key) == 3 and key.islower():
+            iso_speaker_counts[key] = count
+        else:
+            # Try to find ISO code for this ASJP ID
+            # Reverse lookup: find which ISO maps to this ASJP ID
+            found_iso = None
+            for iso_code, asjp_id in iso_to_asjp_representative.items():
+                if asjp_id == key:
+                    found_iso = iso_code
+                    break
+            if found_iso:
+                iso_speaker_counts[found_iso] = count
+            else:
+                # Keep original key as fallback
+                iso_speaker_counts[key] = count
+
     unmapped_languages = set()
 
     for concept_id, concept in asjp_data.items():
@@ -128,19 +150,15 @@ def build_matrix(
             if not normalized_phonemes:
                 continue
 
+            # Look up speakers using ISO code
             iso_code = asjp_to_iso.get(form.language_id)
             if iso_code:
-                representative_asjp_id = iso_to_asjp_representative.get(iso_code)
-                if representative_asjp_id:
-                    speakers = speaker_counts.get(representative_asjp_id)
-                else:
-                    speakers = speaker_counts.get(iso_code)
+                speakers = iso_speaker_counts.get(iso_code, 0)
             else:
-                speakers = None
-
-            if speakers is None:
-                unmapped_languages.add(form.language_id)
                 speakers = 0
+
+            if speakers == 0:
+                unmapped_languages.add(form.language_id)
 
             lang_data = languages.get(form.language_id)
             if lang_data:

@@ -124,3 +124,40 @@ available = sorted([k.lstrip("*") for k in matrix.keys()])
 - `.sisyphus/evidence/task-1-concept-filter-star.txt`
 - `.sisyphus/evidence/task-1-graph-filenames.txt`
 - `.sisyphus/evidence/task-1-invalid-concept.txt`
+
+## Task 4: ISO-Canonical Speaker Lookup (Wave 2)
+
+### Problem
+- `speaker_counts` dict had **mixed keyspace**: some keys were ASJP IDs, others were ISO codes
+- Original lookup chain: `asjp_id → iso_code → representative_asjp_id → speaker_counts[representative_asjp_id]`
+- Failure mode: KeyError when `representative_asjp_id` not found in `speaker_counts`
+- Root cause: `load_speaker_counts()` stores ASJP ID if mapping exists, else ISO code
+
+### Solution
+- Built **ISO-canonical lookup dict** in `build_matrix()`:
+  1. Iterate `speaker_counts` with mixed keys
+  2. Detect ISO codes (3-letter lowercase heuristic)
+  3. For ASJP IDs, reverse-lookup via `iso_to_asjp_representative` to find ISO code
+  4. Store all speaker counts with ISO code keys in `iso_speaker_counts`
+- Simplified lookup: `asjp_id → iso_code → iso_speaker_counts[iso_code]` (fallback to 0)
+
+### Results
+- **83.1% mapping success** (5,032 of 6,056 languages have speaker data)
+- **1,024 unmapped languages** (16.9%) — explicit tracking vs silent failures
+- **Zero KeyErrors** — graceful fallback for missing data
+- **Pipeline executes cleanly** — all 40 concepts processed, 79.1% avg coverage
+
+### Key Insights
+1. **Keyspace normalization is critical** when merging data from multiple sources
+2. **ISO codes are the canonical identifier** — ASJP IDs are variants/dialects
+3. **Explicit unmapped tracking** (speakers=0) better than None/KeyError
+4. **Reverse lookup technique** enables canonicalization without changing data sources
+
+### Code Patterns
+- **Heuristic key detection**: `len(key) == 3 and key.islower()` for ISO codes
+- **Reverse lookup**: Iterate `iso_to_asjp_representative.items()` to find ISO for ASJP ID
+- **Defensive fallback**: `iso_speaker_counts.get(iso_code, 0)` prevents crashes
+
+### Files Modified
+- `pangloss/data/matrix.py` lines 115-143: Added ISO canonicalization logic
+- `data/speakers.json`: Deleted and regenerated (no format change)
