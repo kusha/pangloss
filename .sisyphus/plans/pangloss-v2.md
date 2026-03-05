@@ -982,7 +982,7 @@ assert s2.ratio() < 0.5, 'Different words should have low ratio'
   - Message: `feat(algo): add collision detection for cross-concept and within-concept conflicts`
   - Files: `pangloss/algo/collisions.py` (new), `pangloss/output/dictionary.py`, `pangloss/cli.py`
 
-- [ ] 10. Add articulatory feature groups to phonemes.py
+- [x] 10. Add articulatory feature groups to phonemes.py
 
   **What to do**:
   - In `pangloss/data/phonemes.py`: Add a phoneme feature system for fuzzy matching.
@@ -1230,7 +1230,7 @@ print('Fuzzy parameter defaults to False (backward compatible)')
   - Message: `feat(algo): integrate fuzzy phoneme matching into convergence and generator`
   - Files: `pangloss/algo/convergence.py`, `pangloss/algo/generator.py`
 
-- [ ] 12. Add matrix caching with hash-based invalidation
+- [x] 12. Add matrix caching with hash-based invalidation
 
   **What to do**:
   - In `pangloss/data/matrix.py`: Add caching to `build_matrix()` to avoid re-processing ASJP data on every run.

@@ -1,0 +1,29 @@
+=== VERIFICATION SCENARIO 1: Basic Phoneme Distances ===
+
+phoneme_distance("t", "t") = 0.00
+✓ Identical phonemes return 0.0
+
+phoneme_distance("t", "d") = 0.10
+✓ Voicing difference (same manner/place) returns 0.1
+
+phoneme_distance("t", "k") = 0.30
+✓ Place difference (same manner) returns 0.3
+
+phoneme_distance("a", "t") = 1.00
+✓ Vowel vs consonant returns 1.0
+
+fuzzy_phoneme_match("t", "d") = True
+✓ Close phonemes fuzzy match (distance < 0.5)
+
+fuzzy_phoneme_match("a", "t") = False
+✓ Distant phonemes do not fuzzy match (distance >= 0.5)
+
+=== VERIFICATION SCENARIO 2: Multi-Character Phonemes ===
+
+phoneme_distance("tʃ", "dʒ") = 0.10
+✓ Multi-char affricates handled (voicing difference)
+
+phoneme_distance("aː", "a") = 0.00
+✓ Length-marked vowels handled (same base phoneme)
+
+=== ALL VERIFICATION CHECKS PASSED ===
