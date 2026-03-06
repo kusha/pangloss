@@ -1,7 +1,11 @@
 from dataclasses import dataclass
 from typing import List, Set, Any, Optional, Dict
 import networkx as nx
-from pangloss.algo.convergence import ConvergencePoint, _is_fuzzy_phoneme_sequence_match
+from pangloss.algo.convergence import (
+    ConvergencePoint,
+    _is_fuzzy_phoneme_sequence_match,
+    _compute_deduped_speakers,
+)
 from pangloss.data.phonemes import phoneme_distance
 
 
@@ -104,9 +108,37 @@ def generate_word(
     total_speakers: int,
     max_word_length: int = 8,
     fuzzy: bool = False,
+    asjp_to_iso: Optional[Dict[str, str]] = None,
 ) -> SyntheticWord:
     total_world_speakers = total_speakers
     lang_speakers = {e.language_id: e.speaker_count for e in entries}
+
+    # Hybrid convergence points skip trie extension — their phoneme sequence
+    # is a cross-cluster compromise that won't exist in either trie
+    if convergence_point.is_hybrid:
+        final_phonemes = (
+            convergence_point.prefix_phonemes + convergence_point.suffix_phonemes
+        )
+        if not final_phonemes:
+            final_phonemes = ["a"]
+
+        ipa_str = f"/{''.join(final_phonemes)}/"
+        trans_form = get_transliteration(final_phonemes)
+
+        return SyntheticWord(
+            phonemes=final_phonemes,
+            ipa=ipa_str,
+            form=trans_form,
+            covered_languages=convergence_point.languages,
+            speaker_count=convergence_point.speaker_count,
+            coverage_pct=(convergence_point.speaker_count / total_world_speakers) * 100
+            if total_world_speakers
+            else 0.0,
+            reasoning=f"Hybrid synthesis of {len(convergence_point.languages)} languages "
+            f"({convergence_point.speaker_count:,} speakers). "
+            f"Final form: {ipa_str} (romanized: '{trans_form}').",
+        )
+
     lang_phonemes = {e.language_id: e.phonemes for e in entries} if fuzzy else {}
 
     current_prefix = list(convergence_point.prefix_phonemes)
@@ -154,8 +186,12 @@ def generate_word(
 
         exact_speakers = sum(lang_speakers.get(l, 0) for l in intersect)
         fuzzy_speakers_sum = sum(lang_speakers.get(l, 0) for l in fuzzy_langs)
-        speakers = exact_speakers + int(0.5 * fuzzy_speakers_sum)
-        return intersect | fuzzy_langs, speakers
+        all_langs = intersect | fuzzy_langs
+        if asjp_to_iso:
+            speakers = _compute_deduped_speakers(all_langs, lang_speakers, asjp_to_iso)
+        else:
+            speakers = exact_speakers + int(0.5 * fuzzy_speakers_sum)
+        return all_langs, speakers
 
     curr_langs, curr_speakers = get_intersection(current_prefix, current_suffix)
     curr_score = calculate_score(
