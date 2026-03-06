@@ -6,7 +6,7 @@ from typing import Dict
 
 import click
 
-from pangloss.algo.convergence import find_convergence_points
+from pangloss.algo.convergence import find_convergence_points, merge_convergence_points
 from pangloss.algo.generator import generate_word
 from pangloss.algo.selector import select_synonyms
 from pangloss.data.asjp import load_asjp
@@ -215,14 +215,27 @@ def generate(
             prefix_trie = build_prefix_trie(entries)
             suffix_trie = build_suffix_trie(entries)
 
-            # Find convergence points
+            # Find convergence points — request extra to enable cross-cluster merging
+            merge_pool_k = max(convergence_k * 10, 200)
             points = find_convergence_points(
                 prefix_trie,
                 suffix_trie,
                 entries,
-                k=convergence_k,
+                k=merge_pool_k,
                 fuzzy=True,
             )
+
+            # Merge nearby clusters into deterministic hybrids
+            points = merge_convergence_points(
+                points,
+                lang_speakers=concept_entry.language_to_speakers,
+                asjp_to_iso=asjp_to_iso,
+            )
+
+            # Keep all hybrids + top non-hybrids up to convergence_k
+            hybrids = [pt for pt in points if pt.is_hybrid]
+            non_hybrids = [pt for pt in points if not pt.is_hybrid]
+            points = hybrids + non_hybrids[:convergence_k]
 
             # Generate candidate words from convergence points
             candidates = [
@@ -234,6 +247,7 @@ def generate(
                     total_speakers=concept_entry.total_unique_speakers,
                     max_word_length=max_word_length,
                     fuzzy=True,
+                    asjp_to_iso=asjp_to_iso,
                 )
                 for p in points
             ]
