@@ -9,8 +9,8 @@ maximizes the intersection of their language sets, weighted by speaker count. It
 phonetic universals (e.g., Romance languages clustering around /a/ or /ak/ for water).
 """
 
-from dataclasses import dataclass
-from typing import Any, List, Set
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Set
 import math
 import networkx as nx
 
@@ -29,6 +29,7 @@ class ConvergencePoint:
         speaker_count: Total speakers of those languages
         depth: Combined prefix + suffix depth (indicator of sequence length)
         score: Relevance score (typically depth * speaker_count)
+        is_hybrid: True if this point was synthesized from merging two clusters
     """
 
     prefix_phonemes: List[str]
@@ -37,6 +38,7 @@ class ConvergencePoint:
     speaker_count: int
     depth: int
     score: float
+    is_hybrid: bool = False
 
 
 def _is_fuzzy_phoneme_sequence_match(seq1: List[str], seq2: List[str]) -> bool:
@@ -199,3 +201,189 @@ def find_convergence_points(
                 break
 
     return distinct_points
+
+
+def _are_mergeable(
+    full_a: List[str],
+    full_b: List[str],
+    max_diffs: int = 2,
+    max_phoneme_dist: float = 0.8,
+) -> bool:
+    if len(full_a) != len(full_b):
+        return False
+    if len(full_a) == 0:
+        return False
+
+    diff_count = 0
+    for p1, p2 in zip(full_a, full_b):
+        if p1 != p2:
+            dist = phoneme_distance(p1, p2)
+            if dist > max_phoneme_dist:
+                return False
+            # Zero-distance phonemes (e.g., ə/ɐ, both central vowels) aren't meaningful diffs
+            if dist > 0.0:
+                diff_count += 1
+                if diff_count > max_diffs:
+                    return False
+
+    # Must have at least 1 difference (otherwise they're identical, not a merge)
+    return diff_count >= 1
+
+
+def _resolve_phoneme(
+    p_a: str,
+    p_b: str,
+    speakers_a: int,
+    speakers_b: int,
+) -> str:
+    """Deterministic phoneme resolution: higher speakers wins, lexicographic tiebreak."""
+    if p_a == p_b:
+        return p_a
+    if speakers_a > speakers_b:
+        return p_a
+    if speakers_b > speakers_a:
+        return p_b
+    # Exact tie: lexicographic order for determinism
+    return min(p_a, p_b)
+
+
+def _compute_deduped_speakers(
+    languages: Set[str],
+    lang_speakers: Dict[str, int],
+    asjp_to_iso: Dict[str, str],
+) -> int:
+    """Compute ISO-deduplicated speaker count for a set of ASJP language IDs.
+
+    Multiple ASJP entries may share the same ISO 639-3 code (e.g., MANDARIN,
+    MANDARIN_2, CHINESE_MANDARIN all map to 'zho'). Naively summing their
+    speaker counts inflates the total. This function counts each ISO code
+    only once, using the max speaker count among its ASJP variants.
+    """
+    iso_seen: Dict[str, int] = {}
+    for lang in languages:
+        iso = asjp_to_iso.get(lang)
+        key = iso if iso else lang
+        spk = lang_speakers.get(lang, 0)
+        if key not in iso_seen or spk > iso_seen[key]:
+            iso_seen[key] = spk
+    return sum(iso_seen.values())
+
+
+def merge_convergence_points(
+    points: List[ConvergencePoint],
+    lang_speakers: Dict[str, int],
+    asjp_to_iso: Optional[Dict[str, str]] = None,
+    max_diffs: int = 2,
+    max_phoneme_dist: float = 0.8,
+    min_jaccard_separation: float = 0.7,
+) -> List[ConvergencePoint]:
+    """Merge nearby convergence points into deterministic hybrid forms.
+
+    For each pair of points with similar phoneme sequences but distinct
+    language sets, synthesize a hybrid whose phonemes are resolved
+    position-by-position by speaker-weighted voting.
+
+    The hybrid replaces both originals if it covers more total speakers
+    than either individual point.
+
+    Args:
+        points: Convergence points from find_convergence_points()
+        lang_speakers: language_id → speaker_count mapping
+        max_diffs: Max phoneme positions that may differ (default 2)
+        max_phoneme_dist: Max articulatory distance at each differing position
+        min_jaccard_separation: Min Jaccard distance (1 - Jaccard similarity)
+            between language sets to consider merging. High value = clusters
+            must be mostly disjoint. Default 0.7 means ≤30% overlap.
+
+    Returns:
+        List of ConvergencePoints — originals plus any hybrids that improve coverage.
+        Sorted by score descending.
+    """
+    if len(points) <= 1:
+        return list(points)
+
+    merged_indices: Set[int] = set()
+    hybrids: List[ConvergencePoint] = []
+
+    for i in range(len(points)):
+        if i in merged_indices:
+            continue
+        for j in range(i + 1, len(points)):
+            if j in merged_indices:
+                continue
+
+            pt_a = points[i]
+            pt_b = points[j]
+
+            full_a = pt_a.prefix_phonemes + pt_a.suffix_phonemes
+            full_b = pt_b.prefix_phonemes + pt_b.suffix_phonemes
+
+            if not _are_mergeable(full_a, full_b, max_diffs, max_phoneme_dist):
+                continue
+
+            union_size = len(pt_a.languages | pt_b.languages)
+            if union_size == 0:
+                continue
+            jaccard_sim = len(pt_a.languages & pt_b.languages) / union_size
+            if (1.0 - jaccard_sim) < min_jaccard_separation:
+                continue
+
+            hybrid_phonemes: List[str] = []
+            for p_a, p_b in zip(full_a, full_b):
+                resolved = _resolve_phoneme(
+                    p_a, p_b, pt_a.speaker_count, pt_b.speaker_count
+                )
+                hybrid_phonemes.append(resolved)
+
+            # Split at pt_a's prefix length (higher-scoring, since list is score-sorted)
+            split_at = len(pt_a.prefix_phonemes)
+            hybrid_prefix = hybrid_phonemes[:split_at]
+            hybrid_suffix = hybrid_phonemes[split_at:]
+
+            hybrid_langs = pt_a.languages | pt_b.languages
+            if asjp_to_iso:
+                hybrid_speakers = _compute_deduped_speakers(
+                    hybrid_langs, lang_speakers, asjp_to_iso
+                )
+            else:
+                hybrid_speakers = sum(
+                    lang_speakers.get(lang, 0) for lang in hybrid_langs
+                )
+
+            hybrid_depth = len(hybrid_phonemes)
+            hybrid_score = float(hybrid_depth * math.log1p(hybrid_speakers))
+
+            if asjp_to_iso:
+                speakers_a = _compute_deduped_speakers(
+                    pt_a.languages, lang_speakers, asjp_to_iso
+                )
+                speakers_b = _compute_deduped_speakers(
+                    pt_b.languages, lang_speakers, asjp_to_iso
+                )
+            else:
+                speakers_a = pt_a.speaker_count
+                speakers_b = pt_b.speaker_count
+
+            if hybrid_speakers <= speakers_a and hybrid_speakers <= speakers_b:
+                continue
+
+            hybrid = ConvergencePoint(
+                prefix_phonemes=hybrid_prefix,
+                suffix_phonemes=hybrid_suffix,
+                languages=hybrid_langs,
+                speaker_count=hybrid_speakers,
+                depth=hybrid_depth,
+                score=hybrid_score,
+                is_hybrid=True,
+            )
+
+            hybrids.append(hybrid)
+            merged_indices.add(i)
+            merged_indices.add(j)
+            break
+
+    result = [pt for idx, pt in enumerate(points) if idx not in merged_indices]
+    result.extend(hybrids)
+
+    result.sort(key=lambda x: x.score, reverse=True)
+    return result
