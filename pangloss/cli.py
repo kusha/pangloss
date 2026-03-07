@@ -2,12 +2,12 @@
 
 import sys
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
 import click
 
 from pangloss.algo.convergence import find_convergence_points, merge_convergence_points
-from pangloss.algo.generator import generate_word
+from pangloss.algo.generator import generate_word, SyntheticWord
 from pangloss.algo.selector import select_synonyms
 from pangloss.data.asjp import load_asjp
 from pangloss.data.matrix import build_matrix
@@ -32,6 +32,27 @@ def cli():
 def version():
     """Show version information."""
     click.echo("Pangloss 0.1.0")
+
+
+def _dedup_synonyms(words: List[SyntheticWord]) -> List[SyntheticWord]:
+    seen: Dict[str, SyntheticWord] = {}
+    for w in words:
+        if w.form in seen:
+            existing = seen[w.form]
+            merged_langs = existing.covered_languages | w.covered_languages
+            winner = existing if existing.speaker_count >= w.speaker_count else w
+            seen[w.form] = SyntheticWord(
+                phonemes=winner.phonemes,
+                ipa=winner.ipa,
+                form=winner.form,
+                covered_languages=merged_langs,
+                speaker_count=max(existing.speaker_count, w.speaker_count),
+                coverage_pct=max(existing.coverage_pct, w.coverage_pct),
+                reasoning=winner.reasoning,
+            )
+        else:
+            seen[w.form] = w
+    return list(seen.values())
 
 
 @cli.command()
@@ -259,6 +280,8 @@ def generate(
                 language_to_speakers=concept_entry.language_to_speakers,
                 total_speakers=concept_entry.total_unique_speakers,
             )
+
+            selected = _dedup_synonyms(selected)
 
             # Export graph JSON
             graph_path = graphs_path / f"{concept_name.lstrip('*')}.json"

@@ -6,7 +6,7 @@ from pangloss.algo.convergence import (
     _is_fuzzy_phoneme_sequence_match,
     _compute_deduped_speakers,
 )
-from pangloss.data.phonemes import phoneme_distance
+from pangloss.data.phonemes import canonicalize_sequence
 
 
 @dataclass
@@ -21,67 +21,9 @@ class SyntheticWord:
 
 
 def get_transliteration(phonemes: List[str]) -> str:
-    mapping = {
-        "ʂ": "sh",
-        "ʃ": "sh",
-        "tʃ": "ch",
-        "dʒ": "j",
-        "θ": "th",
-        "ð": "th",
-        "ŋ": "ng",
-        "j": "y",
-        "x": "kh",
-        "ɣ": "gh",
-        "ʔ": "",
-        "c": "ch",
-        "ɲ": "ny",
-        "ʎ": "ly",
-        "β": "v",
-        "ɸ": "f",
-        "ç": "sh",
-        "ʁ": "r",
-        "ʀ": "r",
-        "ɾ": "r",
-        "ɹ": "r",
-        "ʋ": "v",
-        "w": "w",
-        "ʍ": "hw",
-        "ɐ": "a",
-        "ɑ": "a",
-        "ɒ": "o",
-        "æ": "a",
-        "ə": "e",
-        "ɛ": "e",
-        "ɜ": "e",
-        "ɪ": "i",
-        "i": "i",
-        "ɨ": "i",
-        "ɔ": "o",
-        "o": "o",
-        "u": "u",
-        "ʊ": "u",
-        "ʌ": "a",
-        "a": "a",
-        "e": "e",
-        "ː": "",
-        "ʰ": "",
-        "ʷ": "w",
-        "ʲ": "y",
-        "ˤ": "",
-        "̃": "n",
-        "ˈ": "",
-        "ˌ": "",
-    }
-    result = []
-    for p in phonemes:
-        p_clean = p
-        for char, repl in mapping.items():
-            if char in p_clean:
-                p_clean = p_clean.replace(char, repl)
-        result.append(p_clean)
-
-    raw_word = "".join(result)
-    dedup = []
+    canonical = canonicalize_sequence(phonemes)
+    raw_word = "".join(canonical)
+    dedup: list[str] = []
     for c in raw_word:
         if not dedup or dedup[-1] != c:
             dedup.append(c)
