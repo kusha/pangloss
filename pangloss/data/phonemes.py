@@ -137,6 +137,140 @@ ARTICULATORY_FEATURES = {
     "a": ("central", "vowel", "voiced"),
 }
 
+# Canonical phoneme mapping for the reduced Pangloss alphabet.
+#
+# Design goals:
+#   1. Collapse voicing: t/d→t, p/b→p, k/g→k, f/v→f, s/z→s, etc.
+#   2. Collapse labial approximant/fricative: w/v/ʋ/β→w
+#   3. Collapse vowels to 5: a, e, i, o, u (Spanish/Japanese-like)
+#   4. Collapse manner variants: all r-like→r, all l-like→l
+#   5. Result: ~18 consonant letters + 5 vowels
+#
+# The canonical form is always the voiceless variant for obstruents,
+# and the most cross-linguistically common letter for sonorants/vowels.
+CANONICAL_PHONEME = {
+    # Stops — collapse voicing, keep place
+    "p": "p",
+    "b": "p",
+    "t": "t",
+    "d": "t",
+    "k": "k",
+    "ɡ": "k",
+    "g": "k",
+    "q": "k",  # uvular→velar (rare distinction)
+    "ʔ": "",  # glottal stop → silent (many languages drop it)
+    # Fricatives — collapse voicing, collapse place where close
+    "f": "f",
+    "v": "w",  # v→w (labial unification)
+    "θ": "t",
+    "ð": "t",  # dental fricatives→t (th→t, common cross-linguistically)
+    "s": "s",
+    "z": "s",
+    "ʃ": "sh",
+    "ʒ": "sh",
+    "ʂ": "sh",
+    "ʐ": "sh",
+    "ç": "sh",
+    "ʝ": "sh",  # palatal fricatives→sh
+    "x": "h",
+    "ɣ": "h",  # velar fricatives→h
+    "χ": "h",
+    "ʁ": "r",  # uvular: voiceless→h, voiced→r
+    "h": "h",
+    "ɦ": "h",
+    # Affricates — collapse voicing
+    "tʃ": "ch",
+    "dʒ": "ch",
+    "ts": "s",
+    "dz": "s",  # alveolar affricates→s
+    # Nasals — keep place distinctions (m/n/ng are universal)
+    "m": "m",
+    "n": "n",
+    "ɲ": "n",  # palatal nasal→n
+    "ŋ": "ng",
+    "ɳ": "n",  # retroflex nasal→n
+    # Approximants — labial unification
+    "w": "w",
+    "ʋ": "w",  # labiodental approximant→w
+    "ɹ": "r",
+    "j": "y",
+    "ɰ": "w",  # velar approximant→w
+    # Laterals — all→l
+    "l": "l",
+    "ʎ": "l",
+    "ɭ": "l",
+    # Rhotics — all→r
+    "r": "r",
+    "ʀ": "r",
+    "ɾ": "r",
+    "ɽ": "r",
+    # Vowels — 5 vowel system (a e i o u)
+    # Front vowels → i or e
+    "i": "i",
+    "ɪ": "i",
+    "y": "i",
+    "e": "e",
+    "ɛ": "e",
+    "æ": "e",
+    "ø": "e",
+    "œ": "e",
+    # Central vowels → a
+    "ə": "a",
+    "ɘ": "a",
+    "ɵ": "a",
+    "ɜ": "a",
+    "ɐ": "a",
+    "ɨ": "i",
+    "ʉ": "u",
+    "a": "a",
+    # Back vowels → o or u
+    "u": "u",
+    "ʊ": "u",
+    "o": "o",
+    "ɔ": "o",
+    "ɑ": "a",
+    "ɒ": "o",
+    "ʌ": "a",
+    "ɤ": "o",
+    # Modifiers — strip
+    "ː": "",
+    "ʰ": "",
+    "ʷ": "",
+    "ʲ": "",
+    "ˤ": "",
+    "̃": "",
+    "ˈ": "",
+    "ˌ": "",
+}
+
+
+def canonicalize_phoneme(phoneme: str) -> str:
+    """Map an IPA phoneme to its canonical reduced-alphabet form.
+
+    Looks up the full phoneme first, then falls back to the base character
+    (first char) for multi-character phonemes not explicitly listed.
+
+    Returns empty string for phonemes that should be dropped (glottal stop,
+    length markers, stress marks).
+    """
+    if phoneme in CANONICAL_PHONEME:
+        return CANONICAL_PHONEME[phoneme]
+    # Multi-character fallback: try base character
+    if len(phoneme) > 1 and phoneme[0] in CANONICAL_PHONEME:
+        return CANONICAL_PHONEME[phoneme[0]]
+    # Unknown phoneme: return as-is (don't silently drop)
+    return phoneme
+
+
+def canonicalize_sequence(phonemes: List[str]) -> List[str]:
+    """Canonicalize a full phoneme sequence, dropping empty results."""
+    result = []
+    for p in phonemes:
+        c = canonicalize_phoneme(p)
+        if c:
+            result.append(c)
+    return result
+
 
 def normalize_phoneme(phoneme: str) -> str:
     """

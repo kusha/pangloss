@@ -14,7 +14,11 @@ from typing import Any, Dict, List, Optional, Set
 import math
 import networkx as nx
 
-from pangloss.data.phonemes import phoneme_distance
+from pangloss.data.phonemes import (
+    phoneme_distance,
+    canonicalize_phoneme,
+    canonicalize_sequence,
+)
 
 
 @dataclass
@@ -209,24 +213,39 @@ def _are_mergeable(
     max_diffs: int = 2,
     max_phoneme_dist: float = 0.8,
 ) -> bool:
-    if len(full_a) != len(full_b):
+    """Check if two phoneme sequences are close enough to merge.
+
+    Supports variable-length sequences: if they differ by exactly 1 trailing
+    phoneme, the shorter is padded and that position counts as 1 diff.
+    """
+    len_diff = abs(len(full_a) - len(full_b))
+    if len_diff > 1:
         return False
-    if len(full_a) == 0:
+    if len(full_a) == 0 and len(full_b) == 0:
         return False
 
+    # Pad shorter sequence so we can do positional comparison
+    if len(full_a) < len(full_b):
+        full_a = list(full_a) + [""]
+    elif len(full_b) < len(full_a):
+        full_b = list(full_b) + [""]
+
+    canon_a = [canonicalize_phoneme(p) for p in full_a]
+    canon_b = [canonicalize_phoneme(p) for p in full_b]
+
     diff_count = 0
-    for p1, p2 in zip(full_a, full_b):
-        if p1 != p2:
+    for c_a, c_b, p1, p2 in zip(canon_a, canon_b, full_a, full_b):
+        if c_a == c_b:
+            continue
+        # Canonical forms differ — check articulatory distance on originals
+        if p1 and p2:
             dist = phoneme_distance(p1, p2)
             if dist > max_phoneme_dist:
                 return False
-            # Zero-distance phonemes (e.g., ə/ɐ, both central vowels) aren't meaningful diffs
-            if dist > 0.0:
-                diff_count += 1
-                if diff_count > max_diffs:
-                    return False
+        diff_count += 1
+        if diff_count > max_diffs:
+            return False
 
-    # Must have at least 1 difference (otherwise they're identical, not a merge)
     return diff_count >= 1
 
 
@@ -236,15 +255,23 @@ def _resolve_phoneme(
     speakers_a: int,
     speakers_b: int,
 ) -> str:
-    """Deterministic phoneme resolution: higher speakers wins, lexicographic tiebreak."""
-    if p_a == p_b:
-        return p_a
+    """Deterministic phoneme resolution using canonical forms.
+
+    Both phonemes are mapped to their canonical form. If they're the same
+    canonical letter, return that directly. Otherwise, the canonical form
+    of the higher-speaker phoneme wins; lexicographic tiebreak.
+    """
+    c_a = canonicalize_phoneme(p_a)
+    c_b = canonicalize_phoneme(p_b)
+
+    if c_a == c_b:
+        return c_a if c_a else p_a
+
     if speakers_a > speakers_b:
-        return p_a
+        return c_a if c_a else c_b
     if speakers_b > speakers_a:
-        return p_b
-    # Exact tie: lexicographic order for determinism
-    return min(p_a, p_b)
+        return c_b if c_b else c_a
+    return min(c_a, c_b) if (c_a and c_b) else (c_a or c_b)
 
 
 def _compute_deduped_speakers(
@@ -328,15 +355,24 @@ def merge_convergence_points(
             if (1.0 - jaccard_sim) < min_jaccard_separation:
                 continue
 
+            # Pad shorter sequence so zip covers the trailing phoneme
+            padded_a = list(full_a)
+            padded_b = list(full_b)
+            if len(padded_a) < len(padded_b):
+                padded_a.append("")
+            elif len(padded_b) < len(padded_a):
+                padded_b.append("")
+
             hybrid_phonemes: List[str] = []
-            for p_a, p_b in zip(full_a, full_b):
+            for p_a, p_b in zip(padded_a, padded_b):
                 resolved = _resolve_phoneme(
                     p_a, p_b, pt_a.speaker_count, pt_b.speaker_count
                 )
-                hybrid_phonemes.append(resolved)
+                if resolved:  # drop empty (e.g. glottal stop, padding)
+                    hybrid_phonemes.append(resolved)
 
             # Split at pt_a's prefix length (higher-scoring, since list is score-sorted)
-            split_at = len(pt_a.prefix_phonemes)
+            split_at = min(len(pt_a.prefix_phonemes), len(hybrid_phonemes))
             hybrid_prefix = hybrid_phonemes[:split_at]
             hybrid_suffix = hybrid_phonemes[split_at:]
 
