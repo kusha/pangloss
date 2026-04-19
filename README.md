@@ -9,6 +9,11 @@ Pangloss is a language graph analysis and transformation framework. It provides 
 - Command-line interface for easy access
 - YAML-based configuration support
 
+## Documentation
+
+- [Canonical Alphabet](docs/alphabet.md) — the reduced 23-grapheme inventory
+  used for written word forms, with pronunciation guidance and frequency stats.
+
 ## Installation
 
 ```bash
